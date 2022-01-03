@@ -9,7 +9,7 @@ public:
 
 	using SivPhoton::SivPhoton;
 
-	void connectReturn(int32 errorCode, const String& errorString, const String& region, const String& cluster) override
+	void connectReturn(const int32 errorCode, const String& errorString, const String& region, const String& cluster) override
 	{
 		Print << U"MyNetwork::connectReturn() [サーバへの接続に成功したときに(?) 呼ばれる]";
 		Print << U"- error: " << errorString;
@@ -53,7 +53,7 @@ public:
 		}
 	}
 
-	void joinRoomReturn(int32 localPlayerID, int32 errorCode, const String& errorString) override
+	void joinRoomReturn(const int32 localPlayerID, const int32 errorCode, const String& errorString) override
 	{
 		Print << U"MyNetwork::joinRoomReturn() [指定したルームに参加した結果を処理する]";
 		Print << U"- localPlayerID [失敗した場合は 0 (?)]: " << localPlayerID;

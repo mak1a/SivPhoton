@@ -57,7 +57,7 @@ namespace s3d
 			, m_value{ toCopy.m_value }
 		{}
 
-		~SivCustomType(void) {}
+		virtual ~SivCustomType(void) {}
 
 		SivCustomType& operator=(const SivCustomType& toCopy)
 		{
@@ -65,27 +65,27 @@ namespace s3d
 			return *this;
 		}
 
-		void cleanup(void)
+		void cleanup()
 		{}
 
-		bool compare(const ExitGames::Common::CustomTypeBase& other) const
+		bool compare(const ExitGames::Common::CustomTypeBase& other) const override
 		{
 			return m_value == ((SivCustomType&)other).m_value;
 		}
 
-		void duplicate(ExitGames::Common::CustomTypeBase* pRetVal) const
+		void duplicate(ExitGames::Common::CustomTypeBase* pRetVal) const override
 		{
 			*reinterpret_cast<SivCustomType*>(pRetVal) = *this;
 		}
 
-		void deserialize(const nByte* pData, short length)
+		void deserialize(const nByte* pData, const short length) override
 		{
 			const T* hoge = reinterpret_cast<const T*>(pData);
 
 			std::memcpy(&m_value, hoge, sizeof(T));
 		}
 
-		short serialize(nByte* pRetVal) const
+		short serialize(nByte* pRetVal) const override
 		{
 			if (pRetVal)
 			{
@@ -97,7 +97,7 @@ namespace s3d
 			return sizeof(T);
 		}
 
-		ExitGames::Common::JString& toString(ExitGames::Common::JString& retStr, bool withTypes = false) const
+		ExitGames::Common::JString& toString(ExitGames::Common::JString& retStr, const bool withTypes = false) const override
 		{
 			return retStr = detail::ToJString(Unicode::Widen(typeid(T).name()));
 		}
@@ -203,28 +203,28 @@ namespace s3d
 			m_receiveGridEventFunctions.emplace(18, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* eventContent, const Size size) { receivedCustomGridType<Mat3x2, 18>(playerID, eventCode, eventContent, size); });
 		}
 
-		void debugReturn(int debugLevel, const ExitGames::Common::JString& string) override
+		void debugReturn(const int debugLevel, const ExitGames::Common::JString& string) override
 		{
 
 		}
 
-		void connectionErrorReturn(int errorCode) override
+		void connectionErrorReturn(const int errorCode) override
 		{
 			m_context.connectionErrorReturn(errorCode);
 			m_context.m_isUsePhoton = false;
 		}
 
-		void clientErrorReturn(int errorCode) override
+		void clientErrorReturn(const int errorCode) override
 		{
 
 		}
 
-		void warningReturn(int warningCode) override
+		void warningReturn(const int warningCode) override
 		{
 
 		}
 
-		void serverErrorReturn(int errorCode) override
+		void serverErrorReturn(const int errorCode) override
 		{
 
 		}
@@ -479,7 +479,7 @@ namespace s3d
 		}
 
 		// connect() の結果を通知するコールバック
-		void connectReturn(int errorCode, const ExitGames::Common::JString& errorString, const ExitGames::Common::JString& region, const ExitGames::Common::JString& cluster) override
+		void connectReturn(const int errorCode, const ExitGames::Common::JString& errorString, const ExitGames::Common::JString& region, const ExitGames::Common::JString& cluster) override
 		{
 			const String errorText = detail::ToString(errorString);
 			const String regionText = detail::ToString(region);
@@ -499,18 +499,18 @@ namespace s3d
 		}
 
 		// 
-		void leaveRoomReturn(int errorCode, const ExitGames::Common::JString& errorString) override
+		void leaveRoomReturn(const int errorCode, const ExitGames::Common::JString& errorString) override
 		{
 			const String errorText = detail::ToString(errorString);
 			m_context.leaveRoomReturn(errorCode, errorText);
 		}
 
-		void joinRandomRoomReturn(int localPlayerID, const ExitGames::Common::Hashtable& roomProperties, const ExitGames::Common::Hashtable& playerProperties, int errorCode, const ExitGames::Common::JString& errorString) override
+		void joinRandomRoomReturn(const int localPlayerID, const ExitGames::Common::Hashtable& roomProperties, const ExitGames::Common::Hashtable& playerProperties, const int errorCode, const ExitGames::Common::JString& errorString) override
 		{
 			m_context.joinRandomRoomReturn(localPlayerID, errorCode, detail::ToString(errorString));
 		}
 
-		void createRoomReturn(int localPlayerID, const ExitGames::Common::Hashtable& roomProperties, const ExitGames::Common::Hashtable& playerProperties, int errorCode, const ExitGames::Common::JString& errorString) override
+		void createRoomReturn(const int localPlayerID, const ExitGames::Common::Hashtable& roomProperties, const ExitGames::Common::Hashtable& playerProperties, const int errorCode, const ExitGames::Common::JString& errorString) override
 		{
 			m_context.createRoomReturn(localPlayerID, errorCode, detail::ToString(errorString));
 		}
@@ -694,13 +694,13 @@ namespace s3d
 namespace s3d
 {
 	template<class T>
-	void s3d::SivPhoton::opRaiseEvent(uint8 eventCode, const T& value)
+	void s3d::SivPhoton::opRaiseEvent(const uint8 eventCode, const T& value)
 	{
 		this->opRaiseEvent<T>(eventCode, value);
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Rect& value)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Rect& value)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -709,7 +709,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Vec2& value)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Vec2& value)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -718,7 +718,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Point& value)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Point& value)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -727,7 +727,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Circle& value)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Circle& value)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -736,7 +736,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const ColorF& value)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const ColorF& value)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -745,7 +745,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Color& value)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Color& value)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -754,7 +754,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const HSV& value)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const HSV& value)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -763,7 +763,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Line& value)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Line& value)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -772,7 +772,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Triangle& value)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Triangle& value)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -781,7 +781,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const RectF& value)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const RectF& value)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -790,7 +790,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Quad& value)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Quad& value)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -799,7 +799,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Ellipse& value)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Ellipse& value)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -808,7 +808,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const RoundRect& value)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const RoundRect& value)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -817,7 +817,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Vec3& value)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Vec3& value)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -826,7 +826,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Vec4& value)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Vec4& value)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -835,7 +835,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Float2& value)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Float2& value)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -844,7 +844,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Float3& value)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Float3& value)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -853,7 +853,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Float4& value)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Float4& value)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -862,7 +862,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Mat3x2& value)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Mat3x2& value)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -871,7 +871,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Array<Point>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Point>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -891,7 +891,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Array<Vec2>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Vec2>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -911,7 +911,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Array<Rect>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Rect>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -931,7 +931,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Array<Circle>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Circle>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -951,7 +951,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Array<ColorF>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<ColorF>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -971,7 +971,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Array<Color>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Color>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -991,7 +991,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Array<HSV>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<HSV>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1011,7 +1011,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Array<Line>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Line>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1031,7 +1031,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Array<Triangle>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Triangle>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1051,7 +1051,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Array<RectF>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<RectF>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1071,7 +1071,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Array<Quad>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Quad>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1091,7 +1091,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Array<Ellipse>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Ellipse>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1111,7 +1111,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Array<RoundRect>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<RoundRect>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1131,7 +1131,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Array<Vec3>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Vec3>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1151,7 +1151,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Array<Vec4>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Vec4>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1171,7 +1171,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Array<Float2>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Float2>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1191,7 +1191,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Array<Float3>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Float3>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1211,7 +1211,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Array<Float4>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Float4>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1231,7 +1231,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Array<Mat3x2>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Mat3x2>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1251,7 +1251,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Grid<Point>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Point>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1272,7 +1272,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Grid<Vec2>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Vec2>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1293,7 +1293,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Grid<Rect>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Rect>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1314,7 +1314,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Grid<Circle>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Circle>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1335,7 +1335,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Grid<ColorF>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<ColorF>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1356,7 +1356,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Grid<Color>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Color>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1377,7 +1377,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Grid<HSV>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<HSV>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1398,7 +1398,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Grid<Line>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Line>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1419,7 +1419,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Grid<Triangle>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Triangle>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1440,7 +1440,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Grid<RectF>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<RectF>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1461,7 +1461,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Grid<Quad>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Quad>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1482,7 +1482,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Grid<Ellipse>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Ellipse>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1503,7 +1503,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Grid<RoundRect>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<RoundRect>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1524,7 +1524,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Grid<Vec3>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Vec3>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1545,7 +1545,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Grid<Vec4>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Vec4>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1566,7 +1566,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Grid<Float2>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Float2>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1587,7 +1587,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Grid<Float3>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Float3>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1608,7 +1608,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Grid<Float4>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Float4>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1629,7 +1629,7 @@ namespace s3d
 	}
 
 	template<>
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Grid<Mat3x2>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Mat3x2>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1689,7 +1689,7 @@ namespace s3d
 		m_client->opRaiseEvent(reliable, detail::ToJString(value), eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Array<int32>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<int32>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1702,7 +1702,7 @@ namespace s3d
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Array<double>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<double>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1715,7 +1715,7 @@ namespace s3d
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Array<float>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<float>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1728,7 +1728,7 @@ namespace s3d
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Array<bool>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<bool>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1741,7 +1741,7 @@ namespace s3d
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Array<String>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<String>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1760,7 +1760,7 @@ namespace s3d
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Grid<int32>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<int32>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1776,7 +1776,7 @@ namespace s3d
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Grid<double>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<double>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1792,7 +1792,7 @@ namespace s3d
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Grid<float>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<float>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1808,7 +1808,7 @@ namespace s3d
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Grid<bool>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<bool>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1824,7 +1824,7 @@ namespace s3d
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(uint8 eventCode, const Grid<String>& values)
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<String>& values)
 	{
 		Print << U"opRaiseEvent()";
 
@@ -1993,7 +1993,7 @@ namespace s3d
 		Print << U"errorString:" << errorString;
 	}
 
-	void SivPhoton::joinRoomReturn(int32 localPlayerID, int32 errorCode, const String& errorString)
+	void SivPhoton::joinRoomReturn(const int32 localPlayerID, const int32 errorCode, const String& errorString)
 	{
 		Print << U"SivPhoton::joinRoomReturn()";
 		Print << U"localPlayerID:" << localPlayerID;
@@ -2185,7 +2185,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const ColorF& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const ColorF& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(ColorF)";
 		Print << U"playerID: " << playerID;
@@ -2193,7 +2193,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Color& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Color& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Color)";
 		Print << U"playerID: " << playerID;
@@ -2201,7 +2201,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const HSV& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const HSV& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(HSV)";
 		Print << U"playerID: " << playerID;
@@ -2209,7 +2209,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Line& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Line& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Line)";
 		Print << U"playerID: " << playerID;
@@ -2217,7 +2217,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Triangle& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Triangle& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(v)";
 		Print << U"playerID: " << playerID;
@@ -2225,7 +2225,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const RectF& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const RectF& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(RectF)";
 		Print << U"playerID: " << playerID;
@@ -2233,7 +2233,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Quad& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Quad& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Quad)";
 		Print << U"playerID: " << playerID;
@@ -2241,7 +2241,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Ellipse& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Ellipse& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Ellipse)";
 		Print << U"playerID: " << playerID;
@@ -2249,7 +2249,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const RoundRect& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const RoundRect& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(RoundRect)";
 		Print << U"playerID: " << playerID;
@@ -2257,7 +2257,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Vec3& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Vec3& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Vec3)";
 		Print << U"playerID: " << playerID;
@@ -2265,7 +2265,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Vec4& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Vec4& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Vec4)";
 		Print << U"playerID: " << playerID;
@@ -2273,7 +2273,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Float2& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Float2& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Float2)";
 		Print << U"playerID: " << playerID;
@@ -2281,7 +2281,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Mat3x2& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Mat3x2& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Mat3x2)";
 		Print << U"playerID: " << playerID;
@@ -2289,7 +2289,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Float3& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Float3& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Float3)";
 		Print << U"playerID: " << playerID;
@@ -2297,7 +2297,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Float4& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Float4& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Float4)";
 		Print << U"playerID: " << playerID;
@@ -2337,7 +2337,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Array<ColorF>& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<ColorF>& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Array<ColorF>)";
 		Print << U"playerID: " << playerID;
@@ -2345,7 +2345,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Array<Color>& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<Color>& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Array<Color>)";
 		Print << U"playerID: " << playerID;
@@ -2353,7 +2353,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Array<HSV>& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<HSV>& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Array<HSV>)";
 		Print << U"playerID: " << playerID;
@@ -2361,7 +2361,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Array<Line>& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<Line>& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Array<Line>)";
 		Print << U"playerID: " << playerID;
@@ -2369,7 +2369,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Array<Triangle>& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<Triangle>& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Array<Triangle>)";
 		Print << U"playerID: " << playerID;
@@ -2377,7 +2377,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Array<RectF>& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<RectF>& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Array<RectF>)";
 		Print << U"playerID: " << playerID;
@@ -2385,7 +2385,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Array<Quad>& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<Quad>& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Array<Quad>)";
 		Print << U"playerID: " << playerID;
@@ -2393,7 +2393,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Array<Ellipse>& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<Ellipse>& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Array<Ellipse>)";
 		Print << U"playerID: " << playerID;
@@ -2401,7 +2401,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Array<RoundRect>& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<RoundRect>& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Array<RoundRect>)";
 		Print << U"playerID: " << playerID;
@@ -2409,7 +2409,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Array<Vec3>& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<Vec3>& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Array<Vec3>)";
 		Print << U"playerID: " << playerID;
@@ -2417,7 +2417,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Array<Vec4>& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<Vec4>& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Array<Vec4>)";
 		Print << U"playerID: " << playerID;
@@ -2425,7 +2425,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Array<Float2>& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<Float2>& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Array<Float2>)";
 		Print << U"playerID: " << playerID;
@@ -2433,7 +2433,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Array<Mat3x2>& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<Mat3x2>& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Array<Mat3x2>)";
 		Print << U"playerID: " << playerID;
@@ -2441,7 +2441,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Array<Float3>& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<Float3>& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Array<Float3>)";
 		Print << U"playerID: " << playerID;
@@ -2449,7 +2449,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Array<Float4>& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<Float4>& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Array<Float4>)";
 		Print << U"playerID: " << playerID;
@@ -2489,7 +2489,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Grid<ColorF>& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<ColorF>& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Grid<ColorF>)";
 		Print << U"playerID: " << playerID;
@@ -2497,7 +2497,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Grid<Color>& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<Color>& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Grid<Color>)";
 		Print << U"playerID: " << playerID;
@@ -2505,7 +2505,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Grid<HSV>& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<HSV>& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Grid<HSV>)";
 		Print << U"playerID: " << playerID;
@@ -2513,7 +2513,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Grid<Line>& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<Line>& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Grid<Line>)";
 		Print << U"playerID: " << playerID;
@@ -2521,7 +2521,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Grid<Triangle>& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<Triangle>& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Grid<Triangle>)";
 		Print << U"playerID: " << playerID;
@@ -2529,7 +2529,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Grid<RectF>& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<RectF>& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Grid<RectF>)";
 		Print << U"playerID: " << playerID;
@@ -2537,7 +2537,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Grid<Quad>& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<Quad>& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Grid<Quad>)";
 		Print << U"playerID: " << playerID;
@@ -2545,7 +2545,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Grid<Ellipse>& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<Ellipse>& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Grid<Ellipse>)";
 		Print << U"playerID: " << playerID;
@@ -2553,7 +2553,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Grid<RoundRect>& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<RoundRect>& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Grid<RoundRect>)";
 		Print << U"playerID: " << playerID;
@@ -2561,7 +2561,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Grid<Vec3>& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<Vec3>& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Grid<Vec3>)";
 		Print << U"playerID: " << playerID;
@@ -2569,7 +2569,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Grid<Vec4>& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<Vec4>& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Grid<Vec4>)";
 		Print << U"playerID: " << playerID;
@@ -2577,7 +2577,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Grid<Float2>& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<Float2>& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Grid<Float2>)";
 		Print << U"playerID: " << playerID;
@@ -2585,7 +2585,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Grid<Mat3x2>& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<Mat3x2>& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Grid<Mat3x2>)";
 		Print << U"playerID: " << playerID;
@@ -2593,7 +2593,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Grid<Float3>& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<Float3>& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Grid<Float3>)";
 		Print << U"playerID: " << playerID;
@@ -2601,7 +2601,7 @@ namespace s3d
 		Print << U"eventContent: " << eventContent;
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, const Grid<Float4>& eventContent)
+	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<Float4>& eventContent)
 	{
 		Print << U"SivPhoton::customEventAction(Grid<Float4>)";
 		Print << U"playerID: " << playerID;
