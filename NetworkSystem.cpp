@@ -253,9 +253,6 @@ namespace s3d
 		// ルームで他人が RaiseEvent したら呼ばれるコールバック
 		void customEventAction(const int playerID, const nByte eventCode, const ExitGames::Common::Object& eventContent) override
 		{
-			Print << U"SivPhoton::SivPhotonDetail::customEventAction() [ルームで他人が RaiseEvent したときの処理]";
-			Print << U"eventCode: " << int32(eventCode);
-
 			uint8 type = eventContent.getType();
 
 			if (type == ExitGames::Common::TypeCode::CUSTOM)
@@ -298,8 +295,6 @@ namespace s3d
 					{
 						auto values = ExitGames::Common::ValueObject<double*>(eventDataContent.getValue(L"values")).getDataCopy();
 						auto length = *(ExitGames::Common::ValueObject<double*>(eventDataContent.getValue(L"values"))).getSizes();
-
-						Print << length;
 
 						Array<double> data;
 						for (const auto i : step(length))
@@ -386,8 +381,6 @@ namespace s3d
 					{
 						auto values = ExitGames::Common::ValueObject<double*>(eventDataContent.getValue(L"values")).getDataCopy();
 						auto length = *(ExitGames::Common::ValueObject<double*>(eventDataContent.getValue(L"values"))).getSizes();
-
-						Print << length;
 
 						Array<double> data;
 						for (const auto i : step(length))
@@ -595,8 +588,6 @@ namespace s3d
 
 	SivPhoton::~SivPhoton()
 	{
-		Print << U"SivPhoton::~SivPhoton()";
-
 		PhotonPoint::unregisterType();
 		PhotonVec2::unregisterType();
 		PhotonRect::unregisterType();
@@ -622,8 +613,6 @@ namespace s3d
 
 	void SivPhoton::connect(const StringView userName, const Optional<String>& defaultRoomName)
 	{
-		Print << U"SivPhoton::connect() [サーバに接続する]";
-
 		m_defaultRoomName = defaultRoomName.value_or(String{ userName });
 
 		const auto userNameJ = detail::ToJString(userName);
@@ -652,8 +641,6 @@ namespace s3d
 
 	void SivPhoton::opJoinRandomRoom(const int32 maxPlayers)
 	{
-		Print << U"SivPhoton::opJoinRandomRoom(maxPlayers = {}) [既存のランダムなルームに参加する]"_fmt(maxPlayers);
-
 		assert(InRange(maxPlayers, 0, 255));
 
 		m_client->opJoinRandomRoom({}, static_cast<uint8>(Clamp(maxPlayers, 1, 255)));
@@ -661,8 +648,6 @@ namespace s3d
 
 	void SivPhoton::opJoinRoom(const StringView roomName, const bool rejoin)
 	{
-		Print << U"SivPhoton::opJoinRoom() [既存の指定したルームに参加する]";
-
 		const auto roomNameJ = detail::ToJString(roomName);
 
 		m_client->opJoinRoom(roomNameJ, rejoin);
@@ -670,8 +655,6 @@ namespace s3d
 
 	void SivPhoton::opCreateRoom(const StringView roomName, const int32 maxPlayers)
 	{
-		Print << U"SivPhoton::opCreateRoom() [ルームを新規に作成する]";
-
 		assert(InRange(maxPlayers, 0, 255));
 
 		const auto roomNameJ = detail::ToJString(roomName);
@@ -683,8 +666,6 @@ namespace s3d
 
 	void SivPhoton::opLeaveRoom()
 	{
-		Print << U"SivPhoton::opLeaveRoom() [ルームを退室する]";
-
 		constexpr bool willComeBack = false;
 
 		m_client->opLeaveRoom(willComeBack);
@@ -702,8 +683,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Rect& value)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonRect{ value }, eventCode);
 	}
@@ -711,8 +690,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Vec2& value)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonVec2{ value }, eventCode);
 	}
@@ -720,8 +697,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Point& value)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonPoint{ value }, eventCode);
 	}
@@ -729,8 +704,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Circle& value)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonCircle{ value }, eventCode);
 	}
@@ -738,8 +711,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const ColorF& value)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonColorF{ value }, eventCode);
 	}
@@ -747,8 +718,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Color& value)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonColor{ value }, eventCode);
 	}
@@ -756,8 +725,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const HSV& value)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonHSV{ value }, eventCode);
 	}
@@ -765,8 +732,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Line& value)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonLine{ value }, eventCode);
 	}
@@ -774,8 +739,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Triangle& value)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonTriangle{ value }, eventCode);
 	}
@@ -783,8 +746,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const RectF& value)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonRectF{ value }, eventCode);
 	}
@@ -792,8 +753,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Quad& value)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonQuad{ value }, eventCode);
 	}
@@ -801,8 +760,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Ellipse& value)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonEllipse{ value }, eventCode);
 	}
@@ -810,8 +767,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const RoundRect& value)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonRoundRect{ value }, eventCode);
 	}
@@ -819,8 +774,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Vec3& value)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonVec3{ value }, eventCode);
 	}
@@ -828,8 +781,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Vec4& value)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonVec4{ value }, eventCode);
 	}
@@ -837,8 +788,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Float2& value)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonFloat2{ value }, eventCode);
 	}
@@ -846,8 +795,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Float3& value)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonFloat3{ value }, eventCode);
 	}
@@ -855,8 +802,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Float4& value)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonFloat4{ value }, eventCode);
 	}
@@ -864,8 +809,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Mat3x2& value)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonMat3x2{ value }, eventCode);
 	}
@@ -873,8 +816,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Point>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonPoint> data;
@@ -893,8 +834,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Vec2>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonVec2> data;
@@ -913,8 +852,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Rect>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonRect> data;
@@ -933,8 +870,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Circle>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonCircle> data;
@@ -953,8 +888,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<ColorF>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonColorF> data;
@@ -973,8 +906,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Color>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonColor> data;
@@ -993,8 +924,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<HSV>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonHSV> data;
@@ -1013,8 +942,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Line>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonLine> data;
@@ -1033,8 +960,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Triangle>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonTriangle> data;
@@ -1053,8 +978,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<RectF>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonRectF> data;
@@ -1073,8 +996,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Quad>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonQuad> data;
@@ -1093,8 +1014,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Ellipse>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonEllipse> data;
@@ -1113,8 +1032,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<RoundRect>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonRoundRect> data;
@@ -1133,8 +1050,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Vec3>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonVec3> data;
@@ -1153,8 +1068,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Vec4>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonVec4> data;
@@ -1173,8 +1086,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Float2>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonFloat2> data;
@@ -1193,8 +1104,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Float3>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonFloat3> data;
@@ -1213,8 +1122,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Float4>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonFloat4> data;
@@ -1233,8 +1140,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Mat3x2>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonMat3x2> data;
@@ -1253,8 +1158,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Point>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonPoint> data;
@@ -1274,8 +1177,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Vec2>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonVec2> data;
@@ -1295,8 +1196,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Rect>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonRect> data;
@@ -1316,8 +1215,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Circle>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonCircle> data;
@@ -1337,8 +1234,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<ColorF>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonColorF> data;
@@ -1358,8 +1253,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Color>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonColor> data;
@@ -1379,8 +1272,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<HSV>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonHSV> data;
@@ -1400,8 +1291,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Line>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonLine> data;
@@ -1421,8 +1310,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Triangle>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonTriangle> data;
@@ -1442,8 +1329,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<RectF>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonRectF> data;
@@ -1463,8 +1348,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Quad>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonQuad> data;
@@ -1484,8 +1367,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Ellipse>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonEllipse> data;
@@ -1505,8 +1386,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<RoundRect>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonRoundRect> data;
@@ -1526,8 +1405,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Vec3>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonVec3> data;
@@ -1547,8 +1424,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Vec4>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonVec4> data;
@@ -1568,8 +1443,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Float2>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonFloat2> data;
@@ -1589,8 +1462,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Float3>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonFloat3> data;
@@ -1610,8 +1481,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Float4>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonFloat4> data;
@@ -1631,8 +1500,6 @@ namespace s3d
 	template<>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Mat3x2>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<PhotonMat3x2> data;
@@ -1651,48 +1518,36 @@ namespace s3d
 
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const int32 value)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, value, eventCode);
 	}
 
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const double value)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, value, eventCode);
 	}
 
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const float value)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, value, eventCode);
 	}
 
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const bool value)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, value, eventCode);
 	}
 
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const StringView value)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, detail::ToJString(value), eventCode);
 	}
 
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<int32>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		ExitGames::Common::Hashtable ev;
@@ -1704,8 +1559,6 @@ namespace s3d
 
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<double>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		ExitGames::Common::Hashtable ev;
@@ -1717,8 +1570,6 @@ namespace s3d
 
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<float>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		ExitGames::Common::Hashtable ev;
@@ -1730,8 +1581,6 @@ namespace s3d
 
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<bool>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		ExitGames::Common::Hashtable ev;
@@ -1743,8 +1592,6 @@ namespace s3d
 
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<String>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<ExitGames::Common::JString> data;
@@ -1762,8 +1609,6 @@ namespace s3d
 
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<int32>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<int32> data = values.asArray();
@@ -1778,8 +1623,6 @@ namespace s3d
 
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<double>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<double> data = values.asArray();
@@ -1794,8 +1637,6 @@ namespace s3d
 
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<float>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<float> data = values.asArray();
@@ -1810,8 +1651,6 @@ namespace s3d
 
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<bool>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<bool> data = values.asArray();
@@ -1826,8 +1665,6 @@ namespace s3d
 
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<String>& values)
 	{
-		Print << U"opRaiseEvent()";
-
 		constexpr bool reliable = true;
 
 		Array<ExitGames::Common::JString> data;
