@@ -226,6 +226,8 @@ void Main()
 
 ### 三目並べ
 
+![Screenshot](https://user-images.githubusercontent.com/42209021/151191561-ffbd12a8-9a26-44bf-99b1-b2466b46cfed.gif)
+
 ```cpp:Main.cpp
 # include <Siv3D.hpp>
 # include "NetworkSystem.hpp"
