@@ -26,6 +26,9 @@ macOS Catalina
 
 ## サンプルコード
 ### Hello, SivPhoton!
+
+![Screenshot](https://user-images.githubusercontent.com/42209021/151197222-daa85130-5f58-4748-9843-a3040356d27a.gif)
+
 ```cpp:Main.cpp
 # include <Siv3D.hpp> // OpenSiv3D v0.6.3
 # include "NetworkSystem.hpp"
