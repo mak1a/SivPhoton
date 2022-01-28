@@ -623,5 +623,317 @@ void Main()
 
 ```
 
+### 神経衰弱
+
+![Screenshot](https://user-images.githubusercontent.com/42209021/151538598-c4a0293a-5adc-4010-8e0a-e2a1dcc3bbea.gif)
+
+```cpp:Main.cpp
+# include <Siv3D.hpp>
+# include "NetworkSystem.hpp"
+# include "ENCRYPTED_PHOTON_APP_ID.SECRET"
+
+
+class MyNetwork : public SivPhoton
+{
+public:
+
+	MyNetwork(StringView secretPhotonAppID, StringView photonAppVersion)
+		: SivPhoton{ secretPhotonAppID, photonAppVersion }
+		, m_isInGame{ false }
+		, m_pack(75, Palette::Red)
+		, m_flipCount(0)
+		, m_score(0)
+		, m_turn(Turn::Player)
+		, m_flipNums{}
+	{}
+
+	void update()
+	{
+		SivPhoton::update();
+
+		if (not m_isInGame)
+		{
+			if (not isInRoom())
+			{
+				const Array<String> roomList = getRoomNameList();
+
+				for (auto [i, roomName] : Indexed(roomList))
+				{
+					if (SimpleGUI::Button(roomName, Vec2{ 600, 130 + i * 40 }))
+					{
+						opJoinRoom(roomName);
+					}
+				}
+			}
+
+			return;
+		}
+
+		if (!MouseL.down() || m_turn == Turn::Enemy)
+		{
+			return;
+		}
+
+		if (m_flipCount < 2)
+		{
+			// カードのクリック判定＆処理
+			for (int32 i{}; auto & card : m_cards)
+			{
+				if (m_pack.regionAt(card.pos, card.angle).leftClicked() && !card.card.isFaceSide && m_flipCount < 2)
+				{
+					card.card.flip();
+
+					m_flipNums[m_flipCount] = card.card.rank;
+
+					++m_flipCount;
+
+					this->opRaiseEvent(0, i);
+					return;
+				}
+				++i;
+			}
+			return;
+		}
+
+		// めくったカードの数字が一致しているか
+		if (m_flipNums[0] == m_flipNums[1])
+		{
+			auto itr = std::remove_if(m_cards.begin(), m_cards.end(), [](const auto x) {return x.card.isFaceSide; });
+
+			m_cards.erase(itr, m_cards.end());
+		}
+		else
+		{
+			// 裏に戻す
+			for (auto& x : m_cards)
+			{
+				x.card.isFaceSide = false;
+			}
+			m_turn = Turn::Enemy;
+		}
+		m_flipCount = 0;
+		++m_score;
+
+		this->opRaiseEvent(0, true);
+	}
+
+	void draw() const
+	{
+		if (not m_isInGame)
+		{
+			FontAsset(U"Menu")(U"対戦相手を探しています...").drawAt(Scene::CenterF().x, 40);
+			return;
+		}
+
+		for (const auto& card : m_cards)
+		{
+			m_pack(card.card).drawAt(card.pos, card.angle);
+		}
+		const String turn = (m_turn == Turn::Player) ? U"あなたのターンです : " : U"相手のターンです : ";
+		FontAsset(U"Menu")(turn, m_score).drawAt(Scene::CenterF().x, 40);
+	}
+
+private:
+	struct MyCard
+	{
+		Vec2 pos;
+		double angle;
+		PlayingCard::Card card;
+
+		MyCard(const Vec2& pos_, const double angle_, const PlayingCard::Card& card_) noexcept
+			: pos(pos_)
+			, angle(angle_)
+			, card(card_)
+		{}
+	};
+
+	void connectReturn(const int32 errorCode, const String& errorString, const String& region, const String& cluster) override
+	{
+		if (errorCode)
+		{
+			return;
+		}
+
+		if (MessageBoxResult::Yes == System::MessageBoxYesNo(U"新しくルームを作りますか？", MessageBoxStyle::Question))
+		{
+			const String roomName = m_defaultRoomName;
+
+			this->opCreateRoom(roomName, MaxPlayers);
+		}
+	}
+
+	void connectionErrorReturn(const int32 errorCode) override
+	{
+		Print << U"MyNetwork::connectionErrorReturn() [サーバへの接続が失敗したときに呼ばれる]";
+		Print << U"errorCode: " << errorCode;
+	}
+
+	void joinRoomReturn(const int32 localPlayerID, const int32 errorCode, const String& errorString) override
+	{
+		if (errorCode)
+		{
+			Print << U"[指定したルームに参加できなかった(passwordが間違っています)]";
+			return;
+		}
+
+		m_turn = Turn::Enemy;
+	}
+
+	/// @brief 誰かが入室した際に呼び出されます。
+	/// @param localPlayerID 入室したプレイヤーのID
+	/// @param playerIDs プレイヤーのID
+	/// @param isSelf 入室したプレイヤーが自分自身の場合 true, そうでない場合 false
+	/// @remark ゲームの初期化を行う(カードを配る)
+	void joinRoomEventAction(const int32 localPlayerID, const Array<int32>& playerIDs, const bool isSelf) override
+	{
+		if (this->isMasterClient() && isSelf)
+		{
+			return;
+		}
+
+		m_turn = this->isMasterClient() ? Turn::Player : Turn::Enemy;
+		m_isInGame = true;
+
+		Array<std::pair<PlayingCard::Card, int32>> cards;
+		{
+			auto deck = PlayingCard::CreateDeck(0, false);
+			for (int32 i{}; const auto & card : deck)
+			{
+				cards.emplace_back(card, i);
+				++i;
+			}
+		}
+
+		cards.shuffle();
+
+		{
+			for (auto i : step(cards.size()))
+			{
+				m_cards.emplace_back(Vec2(100 + i % 13 * (m_pack.width() * 1.2), 180 + ((i / 13)) * (m_pack.height() * 1.2))
+					, Random(-13_deg, 13_deg)
+					, cards[i].first);
+			}
+		}
+
+		if (this->isMasterClient())
+		{
+			Array<int32> orders;
+			for (uint8 i{}; const auto & [card, order] : cards)
+			{
+				orders.push_back(order);
+				++i;
+			}
+			this->opRaiseEvent(0, orders);
+		}
+
+		ClearPrint();
+	}
+
+	/// @brief 自分がマスタークライアントでない場合のカードの初期化を行います。
+	/// @param playerID 送信したプレイヤーのID
+	/// @param eventCode イベントコード
+	/// @param eventContent 受信したデータ
+	void customEventAction(const int32 playerID, const int32 eventCode, const Array<int32>& eventContent) override
+	{
+		for (const auto cards = PlayingCard::CreateDeck(0, false); size_t i : step(cards.size()))
+		{
+			m_cards[i].card = cards[eventContent[i]];
+		}
+	}
+
+	/// @brief 相手のターンの際、カードを相手がめくった際に同じ場所をめくります。
+	/// @param playerID 送信したプレイヤーのID
+	/// @param eventCode イベントコード
+	/// @param eventContent 受信したデータ
+	void customEventAction(const int32 playerID, const int32 eventCode, const int32 eventContent) override
+	{
+		m_cards[eventContent].card.flip();
+
+		m_flipNums[m_flipCount] = m_cards[eventContent].card.rank;
+
+		++m_flipCount;
+	}
+
+	/// @brief 相手のターンが終わった際に呼び出されます。
+	/// @param playerID 送信したプレイヤーのID
+	/// @param eventCode イベントコード
+	/// @param eventContent 受信したデータ
+	void customEventAction(const int32 playerID, const int32 eventCode, const bool eventContent) override
+	{
+		// めくったカードの数字が一致しているか
+		if (m_flipNums[0] == m_flipNums[1])
+		{
+			auto itr = std::remove_if(m_cards.begin(), m_cards.end(), [](const auto x) {return x.card.isFaceSide; });
+
+			m_cards.erase(itr, m_cards.end());
+		}
+		else
+		{
+			// 裏に戻す
+			for (auto& x : m_cards)
+			{
+				x.card.isFaceSide = false;
+			}
+			// プレイヤーのターンにする
+			m_turn = Turn::Player;
+		}
+		m_flipCount = 0;
+		++m_score;
+	}
+
+	// カードの大きさや描画用の変数
+	PlayingCard::Pack m_pack;
+
+	Array<MyCard> m_cards;
+
+	// 表にしたカードのナンバー(2枚まで保持)
+	std::array<uint32, 2> m_flipNums;
+
+	// 表にしたカードの数
+	uint32 m_flipCount;
+
+	// ターン数
+	uint32 m_score;
+
+	enum class Turn
+	{
+		Player,
+		Enemy,
+	} m_turn;
+
+	// 部屋に入れる最大人数
+	static constexpr int32 MaxPlayers = 2;
+
+	// ゲーム中か
+	bool m_isInGame = false;
+
+};
+
+void Main()
+{
+	// ウィンドウを 1280x720 にリサイズ
+	Window::Resize(1280, 720);
+
+	// 背景色を設定
+	Scene::SetBackground(ColorF{ 0.2, 0.6, 1.0 });
+
+	FontAsset::Register(U"Menu", 30, Typeface::Regular);
+
+	const std::string encryptedAppID{ SIV3D_OBFUSCATE(ENCRYPTED_PHOTON_APP_ID) };
+	const String appID = Unicode::WidenAscii(encryptedAppID);
+
+	MyNetwork network{ appID, U"1.0" };
+
+	network.connect(U"Siv");
+
+	while (System::Update())
+	{
+		network.update();
+		network.draw();
+	}
+}
+
+```
+
 ## その他
 もしもSivPhotonについての質問等ございましたら、[mak1a](https://twitter.com/mak1a_ctrl/)までご連絡ください。また、SivPhotonとSiv3DのSceneManagerを組み合わせたライブラリも公開予定ですので、そちらもお待ちください。
