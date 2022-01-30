@@ -80,6 +80,12 @@ namespace s3d
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
+		/// @remark 自作クラスを送信する際に利用できます。
+		void opRaiseEvent(uint8 eventCode, Serializer<MemoryWriter>& writer);
+
+		/// @brief データの送信を行います。
+		/// @param eventCode イベントコード
+		/// @param value 送信するデータ
 		void opRaiseEvent(uint8 eventCode, int32 value);
 
 		/// @brief データの送信を行います。
@@ -487,6 +493,13 @@ namespace s3d
 		/// @param eventCode イベントコード
 		/// @param eventContent 受信したデータ
 		virtual void customEventAction(int32 playerID, int32 eventCode, const Mat3x2& eventContent);
+
+		/// @brief データを受信した際に呼び出されます。
+		/// @param playerID 送信したプレイヤーのID
+		/// @param eventCode イベントコード
+		/// @param eventContent 受信したデータ
+		/// @remark 自作クラスを受信する際に利用できます。
+		virtual void customEventAction(int32 playerID, int32 eventCode, Deserializer<MemoryReader>& reader);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID

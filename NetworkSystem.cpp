@@ -131,6 +131,9 @@ namespace s3d
 	using PhotonFloat3 = SivCustomType<Float3, 16>;
 	using PhotonFloat4 = SivCustomType<Float4, 17>;
 	using PhotonMat3x2 = SivCustomType<Mat3x2, 18>;
+
+	// Byte型
+	using PhotonByte = SivCustomType<Byte, 19>;
 }
 
 namespace s3d
@@ -161,7 +164,7 @@ namespace s3d
 			m_receiveEventFunctions.emplace(16, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& eventContent) { receivedCustomType<Float3, 16>(playerID, eventCode, eventContent); });
 			m_receiveEventFunctions.emplace(17, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& eventContent) { receivedCustomType<Float4, 17>(playerID, eventCode, eventContent); });
 			m_receiveEventFunctions.emplace(18, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& eventContent) { receivedCustomType<Mat3x2, 18>(playerID, eventCode, eventContent); });
-
+			
 			m_receiveArrayEventFunctions.emplace(0, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* eventContent) { receivedCustomArrayType<ColorF, 0>(playerID, eventCode, eventContent); });
 			m_receiveArrayEventFunctions.emplace(1, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* eventContent) { receivedCustomArrayType<Color, 1>(playerID, eventCode, eventContent); });
 			m_receiveArrayEventFunctions.emplace(2, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* eventContent) { receivedCustomArrayType<HSV, 2>(playerID, eventCode, eventContent); });
@@ -181,7 +184,8 @@ namespace s3d
 			m_receiveArrayEventFunctions.emplace(16, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* eventContent) { receivedCustomArrayType<Float3, 16>(playerID, eventCode, eventContent); });
 			m_receiveArrayEventFunctions.emplace(17, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* eventContent) { receivedCustomArrayType<Float4, 17>(playerID, eventCode, eventContent); });
 			m_receiveArrayEventFunctions.emplace(18, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* eventContent) { receivedCustomArrayType<Mat3x2, 18>(playerID, eventCode, eventContent); });
-
+			m_receiveArrayEventFunctions.emplace(19, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* eventContent) { receivedCustomArrayByte<Byte, 19>(playerID, eventCode, eventContent); });
+			
 			m_receiveGridEventFunctions.emplace(0, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* eventContent, const Size size) { receivedCustomGridType<ColorF, 0>(playerID, eventCode, eventContent, size); });
 			m_receiveGridEventFunctions.emplace(1, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* eventContent, const Size size) { receivedCustomGridType<Color, 1>(playerID, eventCode, eventContent, size); });
 			m_receiveGridEventFunctions.emplace(2, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* eventContent, const Size size) { receivedCustomGridType<HSV, 2>(playerID, eventCode, eventContent, size); });
@@ -540,6 +544,22 @@ namespace s3d
 		}
 
 		template <class T, uint8 N>
+		void receivedCustomArrayByte(const int playerID, const nByte eventCode, const ExitGames::Common::Object* eventContent)
+		{
+			SivCustomType<T, N>* values = ExitGames::Common::ValueObject<SivCustomType<T, N>*>(eventContent).getDataCopy();
+			auto length = *(ExitGames::Common::ValueObject<SivCustomType<T, N>*>(eventContent)).getSizes();
+
+			Array<T> data;
+			for (const auto i : step(length))
+			{
+				data << values[i].getValue();
+			}
+
+			Deserializer<MemoryReader> reader{ data.data(), data.size() };
+			m_context.customEventAction(playerID, eventCode, reader);
+		}
+
+		template <class T, uint8 N>
 		void receivedCustomGridType(const int playerID, const nByte eventCode, const ExitGames::Common::Object* eventContent, const Size size)
 		{
 			SivCustomType<T, N>* values = ExitGames::Common::ValueObject<SivCustomType<T, N>*>(eventContent).getDataCopy();
@@ -584,6 +604,7 @@ namespace s3d
 		PhotonFloat3::registerType();
 		PhotonFloat4::registerType();
 		PhotonMat3x2::registerType();
+		PhotonByte::registerType();
 	}
 
 	SivPhoton::~SivPhoton()
@@ -607,6 +628,7 @@ namespace s3d
 		PhotonFloat3::unregisterType();
 		PhotonFloat4::unregisterType();
 		PhotonMat3x2::unregisterType();
+		PhotonByte::unregisterType();
 
 		disconnect();
 	}
@@ -1146,6 +1168,23 @@ namespace s3d
 		for (const auto& v : values)
 		{
 			data << PhotonMat3x2{ v };
+		}
+
+		ExitGames::Common::Hashtable ev;
+		ev.put(L"ArrayType", L"Array");
+		ev.put(L"values", data.data(), data.size());
+
+		m_client->opRaiseEvent(reliable, ev, eventCode);
+	}
+
+	void SivPhoton::opRaiseEvent(const uint8 eventCode, Serializer<MemoryWriter>& writer)
+	{
+		constexpr bool reliable = true;
+
+		Array<PhotonByte> data;
+		for (const auto& arrayByte = writer->getBlob().asArray(); const auto& v : arrayByte)
+		{
+			data << PhotonByte{ v };
 		}
 
 		ExitGames::Common::Hashtable ev;
@@ -2124,6 +2163,13 @@ namespace s3d
 		Print << U"playerID: " << playerID;
 		Print << U"eventCode: " << eventCode;
 		Print << U"eventContent: " << eventContent;
+	}
+
+	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, Deserializer<MemoryReader>& reader)
+	{
+		Print << U"SivPhoton::customEventAction(Deserializer<MemoryReader>)";
+		Print << U"playerID: " << playerID;
+		Print << U"eventCode: " << eventCode;
 	}
 
 	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Float3& eventContent)
