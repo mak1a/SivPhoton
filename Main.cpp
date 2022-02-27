@@ -1,7 +1,19 @@
-﻿
-# include <Siv3D.hpp> // OpenSiv3D v0.6.3
+﻿# include <Siv3D.hpp> // OpenSiv3D v0.6.3
 # include "NetworkSystem.hpp"
 # include "ENCRYPTED_PHOTON_APP_ID.SECRET"
+
+struct Data
+{
+	Point pos;
+	String s;
+
+	// シリアライズに対応させるためのメンバ関数を定義する
+	template <class Archive>
+	void SIV3D_SERIALIZE(Archive& archive)
+	{
+		archive(pos, s);
+	}
+};
 
 class MyNetwork : public SivPhoton
 {
@@ -32,7 +44,7 @@ public:
 	void connectionErrorReturn(const int32 errorCode) override
 	{
 		Print << U"MyNetwork::connectionErrorReturn() [サーバへの接続が失敗したときに呼ばれる]";
-		Print << U"errorCode: " << errorCode;
+		Print << U"- errorCode: " << errorCode;
 	}
 
 	void joinRandomRoomReturn(const int32 localPlayerID, const int32 errorCode, const String& errorString) override
@@ -73,48 +85,30 @@ public:
 	/// @param playerID 送信したプレイヤーのID
 	/// @param eventCode イベントコード(番号によって意味を持たせたい場合有用)
 	/// @param eventContent 受信した本体
-	void customEventAction(const int32 playerID, const int32 eventCode, const Vec2& eventContent) override
+	void customEventAction(const int32 playerID, const int32 eventCode, const double eventContent) override
 	{
-		Print << U"MyNetwork::customEventAction(Vec2)";
-		Print << U"playerID: " << playerID;
-		Print << U"eventCode: " << eventCode;
-		Print << U"eventContent: " << eventContent;
+		Print << U"MyNetwork::customEventAction(double)";
+		Print << U"- playerID: " << playerID;
+		Print << U"- eventCode: " << eventCode;
+		Print << U"- eventContent: " << eventContent;
 	}
 
 	/// @brief 受信のコード(サンプル)
 	/// @param playerID 送信したプレイヤーのID
 	/// @param eventCode イベントコード(番号によって意味を持たせたい場合有用)
 	/// @param eventContent 受信した本体
-	void customEventAction(const int32 playerID, const int32 eventCode, const double eventContent) override
+	void customEventAction(const int32 playerID, const int32 eventCode, Deserializer<MemoryReader>& eventContent) override
 	{
-		Print << U"MyNetwork::customEventAction(double)";
-		Print << U"playerID: " << playerID;
-		Print << U"eventCode: " << eventCode;
-		Print << U"eventContent: " << eventContent;
-	}
+		Print << U"MyNetwork::customEventAction(Deserializer<MemoryReader>)";
+		Print << U"- playerID: " << playerID;
+		Print << U"- eventCode: " << eventCode;
+		Array<Data> data;
+		eventContent(data);
 
-	/// @brief 受信のコード(Gridサンプル)
-	/// @param playerID 送信したプレイヤーのID
-	/// @param eventCode イベントコード(番号によって意味を持たせたい場合有用)
-	/// @param eventContent 受信した本体
-	void customEventAction(const int32 playerID, const int32 eventCode, const Array<Triangle>& eventContent) override
-	{
-		Print << U"MyNetwork::customEventAction(Array<Triangle>)";
-		Print << U"playerID: " << playerID;
-		Print << U"eventCode: " << eventCode;
-		Print << U"eventContent: " << eventContent;
-	}
-
-	/// @brief 受信のコード(Gridサンプル)
-	/// @param playerID 送信したプレイヤーのID
-	/// @param eventCode イベントコード(番号によって意味を持たせたい場合有用)
-	/// @param eventContent 受信した本体
-	void customEventAction(const int32 playerID, const int32 eventCode, const Grid<Vec4>& eventContent) override
-	{
-		Print << U"MyNetwork::customEventAction(Grid<Vec4>)";
-		Print << U"playerID: " << playerID;
-		Print << U"eventCode: " << eventCode;
-		Print << U"eventContent: " << eventContent;
+		for (const auto& v : data)
+		{
+			Print << U"- eventContent: " << v.pos << U", " << v.s;
+		}
 	}
 
 private:
@@ -138,7 +132,7 @@ void Main()
 	while (System::Update())
 	{
 		font(U"getRoomNameList: {}"_fmt(network.getRoomNameList())).draw(520, 270);
-		font(U"getName: {}"_fmt(network.getName())).draw(520, 300);
+		font(U"getName: {}"_fmt(network.getUserName())).draw(520, 300);
 		font(U"getUserID: {}"_fmt(network.getUserID())).draw(520, 330);
 		font(U"isInRoom: {}"_fmt(network.isInRoom())).draw(520, 360);
 		font(U"getCurrentRoomName: {}"_fmt(network.getCurrentRoomName())).draw(520, 390);
@@ -159,13 +153,16 @@ void Main()
 			Scene::SetBackground(Palette::DefaultBackground);
 		}
 
-		if (SimpleGUI::Button(U"Raise Event Array<Triangle>", Vec2{ 800, 20 }))
+		if (SimpleGUI::Button(U"Raise Event double", Vec2{ 800, 20 }))
 		{
-			network.opRaiseEvent(33, Array<Triangle>{ { Scene::CenterF(), 100 }, { Scene::CenterF().movedBy(200, -100), 200 }});
+			network.opRaiseEvent(33, 4.4);
 		}
-		if (SimpleGUI::Button(U"Raise Event Grid<Vec4>", Vec2{ 800, 70 }))
+		if (SimpleGUI::Button(U"Raise Event Data", Vec2{ 800, 70 }))
 		{
-			network.opRaiseEvent(34, Grid<Vec4>{1, 1, Array<Vec4>{ {3.3, 5.5, 7.7, 9.9} }});
+			Serializer<MemoryWriter> writer;
+			const Array<Data> data = { {Point{11,22}, U"Siv3D"}, {Point{33, 44}, U"mak1a"} };
+			writer(data);
+			network.opRaiseEvent(34, writer);
 		}
 
 		if (not network.isInRoom())

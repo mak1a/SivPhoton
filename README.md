@@ -34,6 +34,19 @@ macOS Catalina
 # include "NetworkSystem.hpp"
 # include "ENCRYPTED_PHOTON_APP_ID.SECRET"
 
+struct Data
+{
+	Point pos;
+	String s;
+
+	// シリアライズに対応させるためのメンバ関数を定義する
+	template <class Archive>
+	void SIV3D_SERIALIZE(Archive& archive)
+	{
+		archive(pos, s);
+	}
+};
+
 class MyNetwork : public SivPhoton
 {
 public:
@@ -63,7 +76,7 @@ public:
 	void connectionErrorReturn(const int32 errorCode) override
 	{
 		Print << U"MyNetwork::connectionErrorReturn() [サーバへの接続が失敗したときに呼ばれる]";
-		Print << U"errorCode: " << errorCode;
+		Print << U"- errorCode: " << errorCode;
 	}
 
 	void joinRandomRoomReturn(const int32 localPlayerID, const int32 errorCode, const String& errorString) override
@@ -104,48 +117,30 @@ public:
 	/// @param playerID 送信したプレイヤーのID
 	/// @param eventCode イベントコード(番号によって意味を持たせたい場合有用)
 	/// @param eventContent 受信した本体
-	void customEventAction(const int32 playerID, const int32 eventCode, const Vec2& eventContent) override
+	void customEventAction(const int32 playerID, const int32 eventCode, const double eventContent) override
 	{
-		Print << U"MyNetwork::customEventAction(Vec2)";
-		Print << U"playerID: " << playerID;
-		Print << U"eventCode: " << eventCode;
-		Print << U"eventContent: " << eventContent;
+		Print << U"MyNetwork::customEventAction(double)";
+		Print << U"- playerID: " << playerID;
+		Print << U"- eventCode: " << eventCode;
+		Print << U"- eventContent: " << eventContent;
 	}
 
 	/// @brief 受信のコード(サンプル)
 	/// @param playerID 送信したプレイヤーのID
 	/// @param eventCode イベントコード(番号によって意味を持たせたい場合有用)
 	/// @param eventContent 受信した本体
-	void customEventAction(const int32 playerID, const int32 eventCode, const double eventContent) override
+	void customEventAction(const int32 playerID, const int32 eventCode, Deserializer<MemoryReader>& eventContent) override
 	{
-		Print << U"MyNetwork::customEventAction(double)";
-		Print << U"playerID: " << playerID;
-		Print << U"eventCode: " << eventCode;
-		Print << U"eventContent: " << eventContent;
-	}
+		Print << U"MyNetwork::customEventAction(Deserializer<MemoryReader>)";
+		Print << U"- playerID: " << playerID;
+		Print << U"- eventCode: " << eventCode;
+		Array<Data> data;
+		eventContent(data);
 
-	/// @brief 受信のコード(Gridサンプル)
-	/// @param playerID 送信したプレイヤーのID
-	/// @param eventCode イベントコード(番号によって意味を持たせたい場合有用)
-	/// @param eventContent 受信した本体
-	void customEventAction(const int32 playerID, const int32 eventCode, const Array<Triangle>& eventContent) override
-	{
-		Print << U"MyNetwork::customEventAction(Array<Triangle>)";
-		Print << U"playerID: " << playerID;
-		Print << U"eventCode: " << eventCode;
-		Print << U"eventContent: " << eventContent;
-	}
-
-	/// @brief 受信のコード(Gridサンプル)
-	/// @param playerID 送信したプレイヤーのID
-	/// @param eventCode イベントコード(番号によって意味を持たせたい場合有用)
-	/// @param eventContent 受信した本体
-	void customEventAction(const int32 playerID, const int32 eventCode, const Grid<Vec4>& eventContent) override
-	{
-		Print << U"MyNetwork::customEventAction(Grid<Vec4>)";
-		Print << U"playerID: " << playerID;
-		Print << U"eventCode: " << eventCode;
-		Print << U"eventContent: " << eventContent;
+		for (const auto& v : data)
+		{
+			Print << U"- eventContent: " << v.pos << U", " << v.s;
+		}
 	}
 
 private:
@@ -169,7 +164,7 @@ void Main()
 	while (System::Update())
 	{
 		font(U"getRoomNameList: {}"_fmt(network.getRoomNameList())).draw(520, 270);
-		font(U"getName: {}"_fmt(network.getName())).draw(520, 300);
+		font(U"getName: {}"_fmt(network.getUserName())).draw(520, 300);
 		font(U"getUserID: {}"_fmt(network.getUserID())).draw(520, 330);
 		font(U"isInRoom: {}"_fmt(network.isInRoom())).draw(520, 360);
 		font(U"getCurrentRoomName: {}"_fmt(network.getCurrentRoomName())).draw(520, 390);
@@ -190,13 +185,16 @@ void Main()
 			Scene::SetBackground(Palette::DefaultBackground);
 		}
 
-		if (SimpleGUI::Button(U"Raise Event Array<Triangle>", Vec2{ 800, 20 }))
+		if (SimpleGUI::Button(U"Raise Event double", Vec2{ 800, 20 }))
 		{
-			network.opRaiseEvent(33, Array<Triangle>{ { Scene::CenterF(), 100 }, { Scene::CenterF().movedBy(200, -100), 200 }});
+			network.opRaiseEvent(33, 4.4);
 		}
-		if (SimpleGUI::Button(U"Raise Event Grid<Vec4>", Vec2{ 800, 70 }))
+		if (SimpleGUI::Button(U"Raise Event Data", Vec2{ 800, 70 }))
 		{
-			network.opRaiseEvent(34, Grid<Vec4>{1, 1, Array<Vec4>{ {3.3, 5.5, 7.7, 9.9} }});
+			Serializer<MemoryWriter> writer;
+			const Array<Data> data = { {Point{11,22}, U"Siv3D"}, {Point{33, 44}, U"mak1a"} };
+			writer(data);
+			network.opRaiseEvent(34, writer);
 		}
 
 		if (not network.isInRoom())
@@ -500,11 +498,11 @@ private:
 	/// @brief 受信のコード(サンプル)
 	/// @param playerID 送信したプレイヤーのID
 	/// @param eventCode イベントコード(マスの状態)
-	/// @param eventContent 受信した本体(マスの座標)
+	/// @param data 受信した本体(マスの座標)
 	/// @remark 敵が置いたマスの情報を受信する
-	void customEventAction(const int32 playerID, const int32 eventCode, const Point& eventContent) override
+	void customEventAction(const int32 playerID, const int32 eventCode, const Point& data) override
 	{
-		m_cells[eventContent].changeState(eventCode);
+		m_cells[data].changeState(eventCode);
 		m_turn = Turn::Self;
 		checkGameEnd();
 	}
@@ -512,9 +510,9 @@ private:
 	/// @brief 受信のコード(サンプル)
 	/// @param playerID 送信したプレイヤーのID
 	/// @param eventCode イベントコード(番号によって意味を持たせたい場合有用)
-	/// @param eventContent 受信した本体
+	/// @param data 受信した本体
 	/// @remark マスの情報の配列を全て「None」に変更する
-	void customEventAction(const int32 playerID, const int32 eventCode, const bool eventContent) override
+	void customEventAction(const int32 playerID, const int32 eventCode, const bool data) override
 	{
 		for (auto& cell : m_cells) {
 			cell.changeState(CellState::None);
@@ -832,24 +830,24 @@ private:
 	/// @brief 自分がマスタークライアントでない場合のカードの初期化を行います。
 	/// @param playerID 送信したプレイヤーのID
 	/// @param eventCode イベントコード
-	/// @param eventContent 受信したデータ
-	void customEventAction(const int32 playerID, const int32 eventCode, const Array<int32>& eventContent) override
+	/// @param data 受信したデータ
+	void customEventAction(const int32 playerID, const int32 eventCode, const Array<int32>& data) override
 	{
 		for (const auto cards = PlayingCard::CreateDeck(0, false); size_t i : step(cards.size()))
 		{
-			m_cards[i].card = cards[eventContent[i]];
+			m_cards[i].card = cards[data[i]];
 		}
 	}
 
 	/// @brief 相手のターンの際、カードを相手がめくった際に同じ場所をめくります。
 	/// @param playerID 送信したプレイヤーのID
 	/// @param eventCode イベントコード
-	/// @param eventContent 受信したデータ
-	void customEventAction(const int32 playerID, const int32 eventCode, const int32 eventContent) override
+	/// @param data 受信したデータ
+	void customEventAction(const int32 playerID, const int32 eventCode, const int32 data) override
 	{
-		m_cards[eventContent].card.flip();
+		m_cards[data].card.flip();
 
-		m_flipNums[m_flipCount] = m_cards[eventContent].card.rank;
+		m_flipNums[m_flipCount] = m_cards[data].card.rank;
 
 		++m_flipCount;
 	}
@@ -857,8 +855,8 @@ private:
 	/// @brief 相手のターンが終わった際に呼び出されます。
 	/// @param playerID 送信したプレイヤーのID
 	/// @param eventCode イベントコード
-	/// @param eventContent 受信したデータ
-	void customEventAction(const int32 playerID, const int32 eventCode, const bool eventContent) override
+	/// @param data 受信したデータ
+	void customEventAction(const int32 playerID, const int32 eventCode, const bool data) override
 	{
 		// めくったカードの数字が一致しているか
 		if (m_flipNums[0] == m_flipNums[1])
