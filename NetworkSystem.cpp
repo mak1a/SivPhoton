@@ -58,7 +58,7 @@ namespace s3d
 			*reinterpret_cast<SivCustomType*>(pRetVal) = *this;
 		}
 
-		void deserialize(const nByte* pData, const short length) override
+		void deserialize(const nByte* pData, [[maybe_unused]] const short length) override
 		{
 			std::memcpy(&m_value, pData, sizeof(Type));
 		}
@@ -75,7 +75,7 @@ namespace s3d
 			return sizeof(Type);
 		}
 
-		ExitGames::Common::JString& toString(ExitGames::Common::JString& retStr, const bool withTypes = false) const override
+		ExitGames::Common::JString& toString(ExitGames::Common::JString& retStr, [[maybe_unused]] const bool withTypes = false) const override
 		{
 			return retStr = detail::ToJString(Format(m_value));
 		}
@@ -87,7 +87,7 @@ namespace s3d
 
 	private:
 
-		Type m_value;
+		Type m_value{};
 	};
 
 
@@ -130,69 +130,40 @@ namespace s3d
 		explicit SivPhotonDetail(SivPhoton& context)
 			: m_context{ context }
 		{
-			m_receiveEventFunctions.emplace(0, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<ColorF, 0>(playerID, eventCode, data); });
-			m_receiveEventFunctions.emplace(1, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Color, 1>(playerID, eventCode, data); });
-			m_receiveEventFunctions.emplace(2, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<HSV, 2>(playerID, eventCode, data); });
-			m_receiveEventFunctions.emplace(3, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Point, 3>(playerID, eventCode, data); });
-			m_receiveEventFunctions.emplace(4, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Vec2, 4>(playerID, eventCode, data); });
-			m_receiveEventFunctions.emplace(5, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Vec3, 5>(playerID, eventCode, data); });
-			m_receiveEventFunctions.emplace(6, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Vec4, 6>(playerID, eventCode, data); });
-			m_receiveEventFunctions.emplace(7, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Float2, 7>(playerID, eventCode, data); });
-			m_receiveEventFunctions.emplace(8, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Float3, 8>(playerID, eventCode, data); });
-			m_receiveEventFunctions.emplace(9, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Float4, 9>(playerID, eventCode, data); });
-			m_receiveEventFunctions.emplace(10, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Mat3x2, 10>(playerID, eventCode, data); });
-			m_receiveEventFunctions.emplace(11, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Rect, 11>(playerID, eventCode, data); });
-			m_receiveEventFunctions.emplace(12, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Circle, 12>(playerID, eventCode, data); });
-			m_receiveEventFunctions.emplace(13, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Line, 13>(playerID, eventCode, data); });
-			m_receiveEventFunctions.emplace(14, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Triangle, 14>(playerID, eventCode, data); });
-			m_receiveEventFunctions.emplace(15, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<RectF, 15>(playerID, eventCode, data); });
-			m_receiveEventFunctions.emplace(16, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Quad, 16>(playerID, eventCode, data); });
-			m_receiveEventFunctions.emplace(17, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Ellipse, 17>(playerID, eventCode, data); });
-			m_receiveEventFunctions.emplace(18, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<RoundRect, 18>(playerID, eventCode, data); });
+			m_receiveEventFunctions.emplace(uint8{ 0 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<ColorF, 0>(playerID, eventCode, data); });
+			m_receiveEventFunctions.emplace(uint8{ 1 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Color, 1>(playerID, eventCode, data); });
+			m_receiveEventFunctions.emplace(uint8{ 2 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<HSV, 2>(playerID, eventCode, data); });
+			m_receiveEventFunctions.emplace(uint8{ 3 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Point, 3>(playerID, eventCode, data); });
+			m_receiveEventFunctions.emplace(uint8{ 4 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Vec2, 4>(playerID, eventCode, data); });
+			m_receiveEventFunctions.emplace(uint8{ 5 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Vec3, 5>(playerID, eventCode, data); });
+			m_receiveEventFunctions.emplace(uint8{ 6 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Vec4, 6>(playerID, eventCode, data); });
+			m_receiveEventFunctions.emplace(uint8{ 7 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Float2, 7>(playerID, eventCode, data); });
+			m_receiveEventFunctions.emplace(uint8{ 8 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Float3, 8>(playerID, eventCode, data); });
+			m_receiveEventFunctions.emplace(uint8{ 9 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Float4, 9>(playerID, eventCode, data); });
+			m_receiveEventFunctions.emplace(uint8{ 10 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Mat3x2, 10>(playerID, eventCode, data); });
+			m_receiveEventFunctions.emplace(uint8{ 11 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Rect, 11>(playerID, eventCode, data); });
+			m_receiveEventFunctions.emplace(uint8{ 12 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Circle, 12>(playerID, eventCode, data); });
+			m_receiveEventFunctions.emplace(uint8{ 13 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Line, 13>(playerID, eventCode, data); });
+			m_receiveEventFunctions.emplace(uint8{ 14 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Triangle, 14>(playerID, eventCode, data); });
+			m_receiveEventFunctions.emplace(uint8{ 15 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<RectF, 15>(playerID, eventCode, data); });
+			m_receiveEventFunctions.emplace(uint8{ 16 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Quad, 16>(playerID, eventCode, data); });
+			m_receiveEventFunctions.emplace(uint8{ 17 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Ellipse, 17>(playerID, eventCode, data); });
+			m_receiveEventFunctions.emplace(uint8{ 18 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<RoundRect, 18>(playerID, eventCode, data); });
 			
-			m_receiveArrayEventFunctions.emplace(0, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<ColorF, 0>(playerID, eventCode, data); });
-			m_receiveArrayEventFunctions.emplace(1, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<Color, 1>(playerID, eventCode, data); });
-			m_receiveArrayEventFunctions.emplace(2, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<HSV, 2>(playerID, eventCode, data); });
-			m_receiveArrayEventFunctions.emplace(3, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<Point, 3>(playerID, eventCode, data); });
-			m_receiveArrayEventFunctions.emplace(4, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<Vec2, 4>(playerID, eventCode, data); });
-			m_receiveArrayEventFunctions.emplace(5, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<Vec3, 5>(playerID, eventCode, data); });
-			m_receiveArrayEventFunctions.emplace(6, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<Vec4, 6>(playerID, eventCode, data); });
-			m_receiveArrayEventFunctions.emplace(7, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<Float2, 7>(playerID, eventCode, data); });
-			m_receiveArrayEventFunctions.emplace(8, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<Float3, 8>(playerID, eventCode, data); });
-			m_receiveArrayEventFunctions.emplace(9, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<Float4, 9>(playerID, eventCode, data); });
-			// m_receiveArrayEventFunctions.emplace(10, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<Mat3x2, 10>(playerID, eventCode, data); });
-			// m_receiveArrayEventFunctions.emplace(11, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<Rect, 11>(playerID, eventCode, data); });
-			// m_receiveArrayEventFunctions.emplace(12, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<Circle, 12>(playerID, eventCode, data); });
-			// m_receiveArrayEventFunctions.emplace(13, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<Line, 13>(playerID, eventCode, data); });
-			// m_receiveArrayEventFunctions.emplace(14, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<Triangle, 14>(playerID, eventCode, data); });
-			// m_receiveArrayEventFunctions.emplace(15, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<RectF, 15>(playerID, eventCode, data); });
-			// m_receiveArrayEventFunctions.emplace(16, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<Quad, 16>(playerID, eventCode, data); });
-			// m_receiveArrayEventFunctions.emplace(17, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<Ellipse, 17>(playerID, eventCode, data); });
-			// m_receiveArrayEventFunctions.emplace(18, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<RoundRect, 18>(playerID, eventCode, data); });
-			m_receiveArrayEventFunctions.emplace(19, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayByte<Byte, 19>(playerID, eventCode, data); });
-			
-			// m_receiveGridEventFunctions.emplace(0, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data, const Size size) { receivedCustomGridType<ColorF, 0>(playerID, eventCode, data, size); });
-			// m_receiveGridEventFunctions.emplace(1, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data, const Size size) { receivedCustomGridType<Color, 1>(playerID, eventCode, data, size); });
-			// m_receiveGridEventFunctions.emplace(2, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data, const Size size) { receivedCustomGridType<HSV, 2>(playerID, eventCode, data, size); });
-			// m_receiveGridEventFunctions.emplace(3, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data, const Size size) { receivedCustomGridType<Point, 3>(playerID, eventCode, data, size); });
-			// m_receiveGridEventFunctions.emplace(4, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data, const Size size) { receivedCustomGridType<Vec2, 4>(playerID, eventCode, data, size); });
-			// m_receiveGridEventFunctions.emplace(5, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data, const Size size) { receivedCustomGridType<Vec3, 5>(playerID, eventCode, data, size); });
-			// m_receiveGridEventFunctions.emplace(6, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data, const Size size) { receivedCustomGridType<Vec4, 6>(playerID, eventCode, data, size); });
-			// m_receiveGridEventFunctions.emplace(7, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data, const Size size) { receivedCustomGridType<Float2, 7>(playerID, eventCode, data, size); });
-			// m_receiveGridEventFunctions.emplace(8, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data, const Size size) { receivedCustomGridType<Float3, 8>(playerID, eventCode, data, size); });
-			// m_receiveGridEventFunctions.emplace(9, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data, const Size size) { receivedCustomGridType<Float4, 9>(playerID, eventCode, data, size); });
-			// m_receiveGridEventFunctions.emplace(10, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data, const Size size) { receivedCustomGridType<Mat3x2, 10>(playerID, eventCode, data, size); });
-			// m_receiveGridEventFunctions.emplace(11, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data, const Size size) { receivedCustomGridType<Rect, 11>(playerID, eventCode, data, size); });
-			// m_receiveGridEventFunctions.emplace(12, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data, const Size size) { receivedCustomGridType<Circle, 12>(playerID, eventCode, data, size); });
-			// m_receiveGridEventFunctions.emplace(13, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data, const Size size) { receivedCustomGridType<Line, 13>(playerID, eventCode, data, size); });
-			// m_receiveGridEventFunctions.emplace(14, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data, const Size size) { receivedCustomGridType<Triangle, 14>(playerID, eventCode, data, size); });
-			// m_receiveGridEventFunctions.emplace(15, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data, const Size size) { receivedCustomGridType<RectF, 15>(playerID, eventCode, data, size); });
-			// m_receiveGridEventFunctions.emplace(16, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data, const Size size) { receivedCustomGridType<Quad, 16>(playerID, eventCode, data, size); });
-			// m_receiveGridEventFunctions.emplace(17, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data, const Size size) { receivedCustomGridType<Ellipse, 17>(playerID, eventCode, data, size); });
-			// m_receiveGridEventFunctions.emplace(18, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data, const Size size) { receivedCustomGridType<RoundRect, 18>(playerID, eventCode, data, size); });
+			m_receiveArrayEventFunctions.emplace(uint8{ 0 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<ColorF, 0>(playerID, eventCode, data); });
+			m_receiveArrayEventFunctions.emplace(uint8{ 1 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<Color, 1>(playerID, eventCode, data); });
+			m_receiveArrayEventFunctions.emplace(uint8{ 2 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<HSV, 2>(playerID, eventCode, data); });
+			m_receiveArrayEventFunctions.emplace(uint8{ 3 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<Point, 3>(playerID, eventCode, data); });
+			m_receiveArrayEventFunctions.emplace(uint8{ 4 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<Vec2, 4>(playerID, eventCode, data); });
+			m_receiveArrayEventFunctions.emplace(uint8{ 5 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<Vec3, 5>(playerID, eventCode, data); });
+			m_receiveArrayEventFunctions.emplace(uint8{ 6 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<Vec4, 6>(playerID, eventCode, data); });
+			m_receiveArrayEventFunctions.emplace(uint8{ 7 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<Float2, 7>(playerID, eventCode, data); });
+			m_receiveArrayEventFunctions.emplace(uint8{ 8 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<Float3, 8>(playerID, eventCode, data); });
+			m_receiveArrayEventFunctions.emplace(uint8{ 9 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<Float4, 9>(playerID, eventCode, data); });
+			m_receiveArrayEventFunctions.emplace(uint8{ 19 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayByte<Byte, 19>(playerID, eventCode, data); });
 		}
 
-		void debugReturn(const int debugLevel, const ExitGames::Common::JString& string) override
+		void debugReturn([[maybe_unused]] const int debugLevel, [[maybe_unused]] const ExitGames::Common::JString& string) override
 		{
 
 		}
@@ -203,17 +174,17 @@ namespace s3d
 			m_context.m_isUsePhoton = false;
 		}
 
-		void clientErrorReturn(const int errorCode) override
+		void clientErrorReturn([[maybe_unused]] const int errorCode) override
 		{
 
 		}
 
-		void warningReturn(const int warningCode) override
+		void warningReturn([[maybe_unused]] const int warningCode) override
 		{
 
 		}
 
-		void serverErrorReturn(const int errorCode) override
+		void serverErrorReturn([[maybe_unused]] const int errorCode) override
 		{
 
 		}
@@ -240,20 +211,20 @@ namespace s3d
 		}
 
 		// ルームで他人が RaiseEvent したら呼ばれるコールバック
-		void customEventAction(const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) override
+		void customEventAction(const int playerID, const nByte eventCode, const ExitGames::Common::Object& _data) override
 		{
-			uint8 type = data.getType();
+			uint8 type = _data.getType();
 
 			if (type == ExitGames::Common::TypeCode::CUSTOM)
 			{
-				const uint8 customType = data.getCustomType();
-				m_receiveEventFunctions[customType](playerID, eventCode, data);
+				const uint8 customType = _data.getCustomType();
+				m_receiveEventFunctions[customType](playerID, eventCode, _data);
 				return;
 			}
 
 			if (type == ExitGames::Common::TypeCode::HASHTABLE)
 			{
-				ExitGames::Common::Hashtable eventDataContent = ExitGames::Common::ValueObject<ExitGames::Common::Hashtable>(data).getDataCopy();
+				ExitGames::Common::Hashtable eventDataContent = ExitGames::Common::ValueObject<ExitGames::Common::Hashtable>(_data).getDataCopy();
 				ExitGames::Common::JString arrayType = ExitGames::Common::ValueObject<ExitGames::Common::JString>(eventDataContent.getValue(L"ArrayType")).getDataCopy();
 				if (arrayType == L"Array")
 				{
@@ -272,10 +243,10 @@ namespace s3d
 						auto values = ExitGames::Common::ValueObject<int*>(eventDataContent.getValue(L"values")).getDataCopy();
 						auto length = *(ExitGames::Common::ValueObject<int*>(eventDataContent.getValue(L"values"))).getSizes();
 
-						Array<int32> data;
+						Array<int32> data(length);
 						for (size_t i = 0; i < length; ++i)
 						{
-							data << values[i];
+							data[i] = values[i];
 						}
 						m_context.customEventAction(playerID, eventCode, data);
 						return;
@@ -285,10 +256,10 @@ namespace s3d
 						auto values = ExitGames::Common::ValueObject<double*>(eventDataContent.getValue(L"values")).getDataCopy();
 						auto length = *(ExitGames::Common::ValueObject<double*>(eventDataContent.getValue(L"values"))).getSizes();
 
-						Array<double> data;
+						Array<double> data(length);
 						for (size_t i = 0; i < length; ++i)
 						{
-							data << values[i];
+							data[i] = values[i];
 						}
 						m_context.customEventAction(playerID, eventCode, data);
 						return;
@@ -298,10 +269,10 @@ namespace s3d
 						auto values = ExitGames::Common::ValueObject<float*>(eventDataContent.getValue(L"values")).getDataCopy();
 						auto length = *(ExitGames::Common::ValueObject<float*>(eventDataContent.getValue(L"values"))).getSizes();
 
-						Array<float> data;
+						Array<float> data(length);
 						for (size_t i = 0; i < length; ++i)
 						{
-							data << values[i];
+							data[i] = values[i];
 						}
 						m_context.customEventAction(playerID, eventCode, data);
 						return;
@@ -311,10 +282,10 @@ namespace s3d
 						auto values = ExitGames::Common::ValueObject<bool*>(eventDataContent.getValue(L"values")).getDataCopy();
 						auto length = *(ExitGames::Common::ValueObject<bool*>(eventDataContent.getValue(L"values"))).getSizes();
 
-						Array<bool> data;
+						Array<bool> data(length);
 						for (size_t i = 0; i < length; ++i)
 						{
-							data << values[i];
+							data[i] = values[i];
 						}
 						m_context.customEventAction(playerID, eventCode, data);
 						return;
@@ -324,10 +295,11 @@ namespace s3d
 						auto values = ExitGames::Common::ValueObject<ExitGames::Common::JString*>(eventDataContent.getValue(L"values")).getDataCopy();
 						auto length = *(ExitGames::Common::ValueObject<ExitGames::Common::JString*>(eventDataContent.getValue(L"values"))).getSizes();
 
-						Array<String> data;
+						Array<String> data(length);
 						for (size_t i = 0; i < length; ++i)
 						{
-							data << detail::ToString(values[i]);
+							// hatena
+							data[i] = detail::ToString(values[i]);
 						}
 						m_context.customEventAction(playerID, eventCode, data);
 						return;
@@ -337,123 +309,25 @@ namespace s3d
 					}
 				}
 
-				//if (arrayType == L"Grid")
-				//{
-				//	type = eventDataContent.getValue(L"values")->getType();
-				//	Size size = ExitGames::Common::ValueObject<PhotonPoint>(eventDataContent.getValue(L"xy")).getDataCopy().getValue();
-				//	if (type == ExitGames::Common::TypeCode::CUSTOM)
-				//	{
-				//		const uint8 customType = eventDataContent.getValue(L"values")->getCustomType();
-				//		m_receiveGridEventFunctions[customType](playerID, eventCode, eventDataContent.getValue(L"values"), size);
-				//		return;
-				//	}
-
-				//	switch (type)
-				//	{
-				//	case ExitGames::Common::TypeCode::INTEGER:
-				//	{
-				//		auto values = ExitGames::Common::ValueObject<int*>(eventDataContent.getValue(L"values")).getDataCopy();
-				//		auto length = *(ExitGames::Common::ValueObject<int*>(eventDataContent.getValue(L"values"))).getSizes();
-
-				//		Array<int32> data;
-				//		for (size_t i = 0; i < length; ++i)
-				//		{
-				//			data << values[i];
-				//		}
-
-				//		Grid<int32> grid(size, data);
-
-				//		m_context.customEventAction(playerID, eventCode, grid);
-				//		return;
-				//	}
-				//	case ExitGames::Common::TypeCode::DOUBLE:
-				//	{
-				//		auto values = ExitGames::Common::ValueObject<double*>(eventDataContent.getValue(L"values")).getDataCopy();
-				//		auto length = *(ExitGames::Common::ValueObject<double*>(eventDataContent.getValue(L"values"))).getSizes();
-
-				//		Array<double> data;
-				//		for (size_t i = 0; i < length; ++i)
-				//		{
-				//			data << values[i];
-				//		}
-
-				//		Grid<double> grid(size, data);
-
-				//		m_context.customEventAction(playerID, eventCode, grid);
-				//		return;
-				//	}
-				//	case ExitGames::Common::TypeCode::FLOAT:
-				//	{
-				//		auto values = ExitGames::Common::ValueObject<float*>(eventDataContent.getValue(L"values")).getDataCopy();
-				//		auto length = *(ExitGames::Common::ValueObject<float*>(eventDataContent.getValue(L"values"))).getSizes();
-
-				//		Array<float> data;
-				//		for (size_t i = 0; i < length; ++i)
-				//		{
-				//			data << values[i];
-				//		}
-
-				//		Grid<float> grid(size, data);
-
-				//		m_context.customEventAction(playerID, eventCode, grid);
-				//		return;
-				//	}
-				//	case ExitGames::Common::TypeCode::BOOLEAN:
-				//	{
-				//		auto values = ExitGames::Common::ValueObject<bool*>(eventDataContent.getValue(L"values")).getDataCopy();
-				//		auto length = *(ExitGames::Common::ValueObject<bool*>(eventDataContent.getValue(L"values"))).getSizes();
-
-				//		Array<bool> data;
-				//		for (size_t i = 0; i < length; ++i)
-				//		{
-				//			data << values[i];
-				//		}
-
-				//		Grid<bool> grid(size, data);
-
-				//		m_context.customEventAction(playerID, eventCode, grid);
-				//		return;
-				//	}
-				//	case ExitGames::Common::TypeCode::STRING:
-				//	{
-				//		auto values = ExitGames::Common::ValueObject<ExitGames::Common::JString*>(eventDataContent.getValue(L"values")).getDataCopy();
-				//		auto length = *(ExitGames::Common::ValueObject<ExitGames::Common::JString*>(eventDataContent.getValue(L"values"))).getSizes();
-
-				//		Array<String> data;
-				//		for (size_t i = 0; i < length; ++i)
-				//		{
-				//			data << detail::ToString(values[i]);
-				//		}
-
-				//		Grid<String> grid(size, data);
-
-				//		m_context.customEventAction(playerID, eventCode, grid);
-				//		return;
-				//	}
-				//	default:
-				//		break;
-				//	}
-				//}
-
 				return;
 			}
 
 			switch (type)
 			{
 			case ExitGames::Common::TypeCode::INTEGER:
-				m_context.customEventAction(playerID, eventCode, ExitGames::Common::ValueObject<int>(data).getDataCopy());
+				m_context.customEventAction(playerID, eventCode, ExitGames::Common::ValueObject<int>(_data).getDataCopy());
 				return;
 			case ExitGames::Common::TypeCode::DOUBLE:
-				m_context.customEventAction(playerID, eventCode, ExitGames::Common::ValueObject<double>(data).getDataCopy());
+				m_context.customEventAction(playerID, eventCode, ExitGames::Common::ValueObject<double>(_data).getDataCopy());
 				return;
 			case ExitGames::Common::TypeCode::FLOAT:
-				m_context.customEventAction(playerID, eventCode, ExitGames::Common::ValueObject<float>(data).getDataCopy());
+				m_context.customEventAction(playerID, eventCode, ExitGames::Common::ValueObject<float>(_data).getDataCopy());
 				return;
 			case ExitGames::Common::TypeCode::BOOLEAN:
-				m_context.customEventAction(playerID, eventCode, ExitGames::Common::ValueObject<bool>(data).getDataCopy());
+				m_context.customEventAction(playerID, eventCode, ExitGames::Common::ValueObject<bool>(_data).getDataCopy());
 				return;
 			case ExitGames::Common::TypeCode::STRING:
-				m_context.customEventAction(playerID, eventCode, detail::ToString(ExitGames::Common::ValueObject<ExitGames::Common::JString>(data).getDataCopy()));
+				m_context.customEventAction(playerID, eventCode, detail::ToString(ExitGames::Common::ValueObject<ExitGames::Common::JString>(_data).getDataCopy()));
 				return;
 			default:
 				break;
@@ -487,12 +361,12 @@ namespace s3d
 			m_context.leaveRoomReturn(errorCode, errorText);
 		}
 
-		void joinRandomRoomReturn(const int localPlayerID, const ExitGames::Common::Hashtable& roomProperties, const ExitGames::Common::Hashtable& playerProperties, const int errorCode, const ExitGames::Common::JString& errorString) override
+		void joinRandomRoomReturn(const int localPlayerID, [[maybe_unused]] const ExitGames::Common::Hashtable& roomProperties, [[maybe_unused]] const ExitGames::Common::Hashtable& playerProperties, const int errorCode, const ExitGames::Common::JString& errorString) override
 		{
 			m_context.joinRandomRoomReturn(localPlayerID, errorCode, detail::ToString(errorString));
 		}
 
-		void createRoomReturn(const int localPlayerID, const ExitGames::Common::Hashtable& roomProperties, const ExitGames::Common::Hashtable& playerProperties, const int errorCode, const ExitGames::Common::JString& errorString) override
+		void createRoomReturn(const int localPlayerID, [[maybe_unused]] const ExitGames::Common::Hashtable& roomProperties, [[maybe_unused]] const ExitGames::Common::Hashtable& playerProperties, const int errorCode, const ExitGames::Common::JString& errorString) override
 		{
 			m_context.createRoomReturn(localPlayerID, errorCode, detail::ToString(errorString));
 		}
@@ -504,8 +378,6 @@ namespace s3d
 		HashTable<uint8, std::function<void(const int, const nByte, const ExitGames::Common::Object&)>> m_receiveEventFunctions;
 
 		HashTable<uint8, std::function<void(const int, const nByte, const ExitGames::Common::Object*)>> m_receiveArrayEventFunctions;
-
-		//HashTable<uint8, std::function<void(const int, const nByte, const ExitGames::Common::Object*, const Size)>> m_receiveGridEventFunctions;
 
 		template <class Type, uint8 N>
 		void receivedCustomType(const int playerID, const nByte eventCode, const ExitGames::Common::Object& eventContent)
@@ -520,10 +392,10 @@ namespace s3d
 			SivCustomType<Type, N>* values = ExitGames::Common::ValueObject<SivCustomType<Type, N>*>(eventContent).getDataCopy();
 			auto length = *(ExitGames::Common::ValueObject<SivCustomType<Type, N>*>(eventContent)).getSizes();
 
-			Array<Type> data;
+			Array<Type> data(length);
 			for (size_t i = 0; i < length; ++i)
 			{
-				data << values[i].getValue();
+				data[i] = values[i].getValue();
 			}
 			m_context.customEventAction(playerID, eventCode, data);
 		}
@@ -534,32 +406,15 @@ namespace s3d
 			SivCustomType<Type, N>* values = ExitGames::Common::ValueObject<SivCustomType<Type, N>*>(eventContent).getDataCopy();
 			auto length = *(ExitGames::Common::ValueObject<SivCustomType<Type, N>*>(eventContent)).getSizes();
 
-			Array<Type> data;
+			Array<Type> data(length);
 			for (size_t i = 0; i < length; ++i)
 			{
-				data << values[i].getValue();
+				data[i] =  values[i].getValue();
 			}
 
 			Deserializer<MemoryReader> reader{ data.data(), data.size() };
 			m_context.customEventAction(playerID, eventCode, reader);
 		}
-
-		//template <class Type, uint8 N>
-		//void receivedCustomGridType(const int playerID, const nByte eventCode, const ExitGames::Common::Object* eventContent, const Size size)
-		//{
-		//	SivCustomType<Type, N>* values = ExitGames::Common::ValueObject<SivCustomType<Type, N>*>(eventContent).getDataCopy();
-		//	auto length = *(ExitGames::Common::ValueObject<SivCustomType<Type, N>*>(eventContent)).getSizes();
-
-		//	Array<Type> data;
-		//	for (size_t i = 0; i < length; ++i)
-		//	{
-		//		data << values[i].getValue();
-		//	}
-
-		//	Grid<Type> grid{ size, data };
-		//	m_context.customEventAction(playerID, eventCode, grid);
-		//}
-
 	};
 }
 
@@ -722,480 +577,309 @@ namespace s3d
 
 namespace s3d
 {
-	template <>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const ColorF& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonColorF{ value }, eventCode);
 	}
 
-	template <>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Color& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonColor{ value }, eventCode);
 	}
 
-	template <>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const HSV& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonHSV{ value }, eventCode);
 	}
 
-	template <>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Point& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonPoint{ value }, eventCode);
 	}
 
-	template <>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Vec2& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonVec2{ value }, eventCode);
 	}
 
-	template <>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Vec3& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonVec3{ value }, eventCode);
 	}
 
-	template <>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Vec4& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonVec4{ value }, eventCode);
 	}
 
-	template <>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Float2& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonFloat2{ value }, eventCode);
 	}
 
-	template <>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Float3& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonFloat3{ value }, eventCode);
 	}
 
-	template <>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Float4& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonFloat4{ value }, eventCode);
 	}
 
-	template <>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Mat3x2& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonMat3x2{ value }, eventCode);
 	}
 
-	template <>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Rect& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonRect{ value }, eventCode);
 	}
 
-	template <>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Circle& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonCircle{ value }, eventCode);
 	}
 
-	template <>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Line& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonLine{ value }, eventCode);
 	}
 
-	template <>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Triangle& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonTriangle{ value }, eventCode);
 	}
 
-	template <>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const RectF& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonRectF{ value }, eventCode);
 	}
 
-	template <>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Quad& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonQuad{ value }, eventCode);
 	}
 
-	template <>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Ellipse& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonEllipse{ value }, eventCode);
 	}
 
-	template <>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const RoundRect& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonRoundRect{ value }, eventCode);
 	}
 
-	template <>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<ColorF>& values)
 	{
 		constexpr bool reliable = true;
 
 		Array<PhotonColorF> data;
+		data.reserve(values.size());
+
 		for (const auto& v : values)
 		{
-			data << PhotonColorF{ v };
+			data.emplace_back(v);
 		}
 
 		ExitGames::Common::Hashtable ev;
 		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", data.data(), data.size());
+		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
 
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	template <>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Color>& values)
 	{
 		constexpr bool reliable = true;
 
 		Array<PhotonColor> data;
+		data.reserve(values.size());
+
 		for (const auto& v : values)
 		{
-			data << PhotonColor{ v };
+			data.emplace_back(v);
 		}
 
 		ExitGames::Common::Hashtable ev;
 		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", data.data(), data.size());
+		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
 
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	template <>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<HSV>& values)
 	{
 		constexpr bool reliable = true;
 
 		Array<PhotonHSV> data;
+		data.reserve(values.size());
+
 		for (const auto& v : values)
 		{
-			data << PhotonHSV{ v };
+			data.emplace_back(v);
 		}
 
 		ExitGames::Common::Hashtable ev;
 		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", data.data(), data.size());
+		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
 
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	template <>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Point>& values)
 	{
 		constexpr bool reliable = true;
 
 		Array<PhotonPoint> data;
+		data.reserve(values.size());
+
 		for (const auto& v : values)
 		{
-			data << PhotonPoint{ v };
+			data.emplace_back(v);
 		}
 
 		ExitGames::Common::Hashtable ev;
 		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", data.data(), data.size());
+		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
 
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	template <>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Vec2>& values)
 	{
 		constexpr bool reliable = true;
 
 		Array<PhotonVec2> data;
+		data.reserve(values.size());
+
 		for (const auto& v : values)
 		{
-			data << PhotonVec2{ v };
+			data.emplace_back(v);
 		}
 
 		ExitGames::Common::Hashtable ev;
 		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", data.data(), data.size());
+		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
 
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	template <>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Vec3>& values)
 	{
 		constexpr bool reliable = true;
 
 		Array<PhotonVec3> data;
+		data.reserve(values.size());
+
 		for (const auto& v : values)
 		{
-			data << PhotonVec3{ v };
+			data.emplace_back(v);
 		}
 
 		ExitGames::Common::Hashtable ev;
 		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", data.data(), data.size());
+		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
 
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	template <>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Vec4>& values)
 	{
 		constexpr bool reliable = true;
 
 		Array<PhotonVec4> data;
+		data.reserve(values.size());
+
 		for (const auto& v : values)
 		{
-			data << PhotonVec4{ v };
+			data.emplace_back(v);
 		}
 
 		ExitGames::Common::Hashtable ev;
 		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", data.data(), data.size());
+		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
 
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	template <>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Float2>& values)
 	{
 		constexpr bool reliable = true;
 
 		Array<PhotonFloat2> data;
+		data.reserve(values.size());
+
 		for (const auto& v : values)
 		{
-			data << PhotonFloat2{ v };
+			data.emplace_back(v);
 		}
 
 		ExitGames::Common::Hashtable ev;
 		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", data.data(), data.size());
+		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
 
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	template <>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Float3>& values)
 	{
 		constexpr bool reliable = true;
 
 		Array<PhotonFloat3> data;
+		data.reserve(values.size());
+
 		for (const auto& v : values)
 		{
-			data << PhotonFloat3{ v };
+			data.emplace_back(v);
 		}
 
 		ExitGames::Common::Hashtable ev;
 		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", data.data(), data.size());
+		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
 
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	template <>
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Float4>& values)
 	{
 		constexpr bool reliable = true;
 
 		Array<PhotonFloat4> data;
+		data.reserve(values.size());
+
 		for (const auto& v : values)
 		{
-			data << PhotonFloat4{ v };
+			data.emplace_back(v);
 		}
 
 		ExitGames::Common::Hashtable ev;
 		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", data.data(), data.size());
+		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
 
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
-
-	//template <>
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Mat3x2>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<PhotonMat3x2> data;
-	//	for (const auto& v : values)
-	//	{
-	//		data << PhotonMat3x2{ v };
-	//	}
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Array");
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
-
-	//template <>
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Rect>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<PhotonRect> data;
-	//	for (const auto& v : values)
-	//	{
-	//		data << PhotonRect{ v };
-	//	}
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Array");
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
-
-	//template <>
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Circle>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<PhotonCircle> data;
-	//	for (const auto& v : values)
-	//	{
-	//		data << PhotonCircle{ v };
-	//	}
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Array");
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
-
-	//template <>
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Line>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<PhotonLine> data;
-	//	for (const auto& v : values)
-	//	{
-	//		data << PhotonLine{ v };
-	//	}
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Array");
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
-
-	//template <>
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Triangle>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<PhotonTriangle> data;
-	//	for (const auto& v : values)
-	//	{
-	//		data << PhotonTriangle{ v };
-	//	}
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Array");
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
-
-	//template <>
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<RectF>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<PhotonRectF> data;
-	//	for (const auto& v : values)
-	//	{
-	//		data << PhotonRectF{ v };
-	//	}
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Array");
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
-
-	//template <>
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Quad>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<PhotonQuad> data;
-	//	for (const auto& v : values)
-	//	{
-	//		data << PhotonQuad{ v };
-	//	}
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Array");
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
-
-	//template <>
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Ellipse>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<PhotonEllipse> data;
-	//	for (const auto& v : values)
-	//	{
-	//		data << PhotonEllipse{ v };
-	//	}
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Array");
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
-
-	//template <>
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<RoundRect>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<PhotonRoundRect> data;
-	//	for (const auto& v : values)
-	//	{
-	//		data << PhotonRoundRect{ v };
-	//	}
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Array");
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
 
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, Serializer<MemoryWriter>& writer)
 	{
@@ -1209,371 +893,10 @@ namespace s3d
 
 		ExitGames::Common::Hashtable ev;
 		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", data.data(), data.size());
+		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
 
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
-
-	//template <>
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<ColorF>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<PhotonColorF> data;
-	//	for (const auto& v : values)
-	//	{
-	//		data << PhotonColorF{ v };
-	//	}
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Grid");
-	//	ev.put(L"xy", PhotonPoint{ Point{values.width(), values.height()} });
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
-
-	//template <>
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Color>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<PhotonColor> data;
-	//	for (const auto& v : values)
-	//	{
-	//		data << PhotonColor{ v };
-	//	}
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Grid");
-	//	ev.put(L"xy", PhotonPoint{ Point{values.width(), values.height()} });
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
-
-	//template <>
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<HSV>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<PhotonHSV> data;
-	//	for (const auto& v : values)
-	//	{
-	//		data << PhotonHSV{ v };
-	//	}
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Grid");
-	//	ev.put(L"xy", PhotonPoint{ Point{values.width(), values.height()} });
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
-
-	//template <>
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Point>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<PhotonPoint> data;
-	//	for (const auto& v : values)
-	//	{
-	//		data << PhotonPoint{ v };
-	//	}
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Grid");
-	//	ev.put(L"xy", PhotonPoint{ Point{values.width(), values.height()} });
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
-
-	//template <>
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Vec2>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<PhotonVec2> data;
-	//	for (const auto& v : values)
-	//	{
-	//		data << PhotonVec2{ v };
-	//	}
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Grid");
-	//	ev.put(L"xy", PhotonPoint{ Point{values.width(), values.height()} });
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
-
-	//template <>
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Vec3>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<PhotonVec3> data;
-	//	for (const auto& v : values)
-	//	{
-	//		data << PhotonVec3{ v };
-	//	}
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Grid");
-	//	ev.put(L"xy", PhotonPoint{ Point{values.width(), values.height()} });
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
-
-	//template <>
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Vec4>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<PhotonVec4> data;
-	//	for (const auto& v : values)
-	//	{
-	//		data << PhotonVec4{ v };
-	//	}
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Grid");
-	//	ev.put(L"xy", PhotonPoint{ Point{values.width(), values.height()} });
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
-
-	//template <>
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Float2>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<PhotonFloat2> data;
-	//	for (const auto& v : values)
-	//	{
-	//		data << PhotonFloat2{ v };
-	//	}
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Grid");
-	//	ev.put(L"xy", PhotonPoint{ Point{values.width(), values.height()} });
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
-
-	//template <>
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Float3>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<PhotonFloat3> data;
-	//	for (const auto& v : values)
-	//	{
-	//		data << PhotonFloat3{ v };
-	//	}
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Grid");
-	//	ev.put(L"xy", PhotonPoint{ Point{values.width(), values.height()} });
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
-
-	//template <>
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Float4>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<PhotonFloat4> data;
-	//	for (const auto& v : values)
-	//	{
-	//		data << PhotonFloat4{ v };
-	//	}
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Grid");
-	//	ev.put(L"xy", PhotonPoint{ Point{values.width(), values.height()} });
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
-
-	//template <>
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Mat3x2>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<PhotonMat3x2> data;
-	//	for (const auto& v : values)
-	//	{
-	//		data << PhotonMat3x2{ v };
-	//	}
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Grid");
-	//	ev.put(L"xy", PhotonPoint{ Point{values.width(), values.height()} });
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
-
-	//template <>
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Rect>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<PhotonRect> data;
-	//	for (const auto& v : values)
-	//	{
-	//		data << PhotonRect{ v };
-	//	}
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Grid");
-	//	ev.put(L"xy", PhotonPoint{ Point{values.width(), values.height()} });
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
-
-	//template <>
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Circle>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<PhotonCircle> data;
-	//	for (const auto& v : values)
-	//	{
-	//		data << PhotonCircle{ v };
-	//	}
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Grid");
-	//	ev.put(L"xy", PhotonPoint{ Point{values.width(), values.height()} });
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
-
-	//template <>
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Line>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<PhotonLine> data;
-	//	for (const auto& v : values)
-	//	{
-	//		data << PhotonLine{ v };
-	//	}
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Grid");
-	//	ev.put(L"xy", PhotonPoint{ Point{values.width(), values.height()} });
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
-
-	//template <>
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Triangle>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<PhotonTriangle> data;
-	//	for (const auto& v : values)
-	//	{
-	//		data << PhotonTriangle{ v };
-	//	}
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Grid");
-	//	ev.put(L"xy", PhotonPoint{ Point{values.width(), values.height()} });
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
-
-	//template <>
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<RectF>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<PhotonRectF> data;
-	//	for (const auto& v : values)
-	//	{
-	//		data << PhotonRectF{ v };
-	//	}
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Grid");
-	//	ev.put(L"xy", PhotonPoint{ Point{values.width(), values.height()} });
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
-
-	//template <>
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Quad>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<PhotonQuad> data;
-	//	for (const auto& v : values)
-	//	{
-	//		data << PhotonQuad{ v };
-	//	}
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Grid");
-	//	ev.put(L"xy", PhotonPoint{ Point{values.width(), values.height()} });
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
-
-	//template <>
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<Ellipse>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<PhotonEllipse> data;
-	//	for (const auto& v : values)
-	//	{
-	//		data << PhotonEllipse{ v };
-	//	}
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Grid");
-	//	ev.put(L"xy", PhotonPoint{ Point{values.width(), values.height()} });
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
-
-	//template <>
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<RoundRect>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<PhotonRoundRect> data;
-	//	for (const auto& v : values)
-	//	{
-	//		data << PhotonRoundRect{ v };
-	//	}
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Grid");
-	//	ev.put(L"xy", PhotonPoint{ Point{values.width(), values.height()} });
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
 
 	void SivPhoton::opRaiseEvent(const uint8 eventCode, const int32 value)
 	{
@@ -1611,7 +934,7 @@ namespace s3d
 
 		ExitGames::Common::Hashtable ev;
 		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", values.data(), values.size());
+		ev.put(L"values", values.data(), static_cast<int16>(values.size()));
 
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
@@ -1622,7 +945,7 @@ namespace s3d
 
 		ExitGames::Common::Hashtable ev;
 		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", values.data(), values.size());
+		ev.put(L"values", values.data(), static_cast<int16>(values.size()));
 
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
@@ -1633,7 +956,7 @@ namespace s3d
 
 		ExitGames::Common::Hashtable ev;
 		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", values.data(), values.size());
+		ev.put(L"values", values.data(), static_cast<int16>(values.size()));
 
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
@@ -1644,7 +967,7 @@ namespace s3d
 
 		ExitGames::Common::Hashtable ev;
 		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", values.data(), values.size());
+		ev.put(L"values", values.data(), static_cast<int16>(values.size()));
 
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
@@ -1661,84 +984,10 @@ namespace s3d
 
 		ExitGames::Common::Hashtable ev;
 		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", data.data(), data.size());
+		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
 
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
-
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<int32>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<int32> data = values.asArray();
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Grid");
-	//	ev.put(L"xy", PhotonPoint{ Point{values.width(), values.height()} });
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
-
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<double>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<double> data = values.asArray();
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Grid");
-	//	ev.put(L"xy", PhotonPoint{ Point{values.width(), values.height()} });
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
-
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<float>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<float> data = values.asArray();
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Grid");
-	//	ev.put(L"xy", PhotonPoint{ Point{values.width(), values.height()} });
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
-
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<bool>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<bool> data = values.asArray();
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Grid");
-	//	ev.put(L"xy", PhotonPoint{ Point{values.width(), values.height()} });
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
-
-	//void SivPhoton::opRaiseEvent(const uint8 eventCode, const Grid<String>& values)
-	//{
-	//	constexpr bool reliable = true;
-
-	//	Array<ExitGames::Common::JString> data;
-	//	for (const auto& v : values)
-	//	{
-	//		data << detail::ToJString(v);
-	//	}
-
-	//	ExitGames::Common::Hashtable ev;
-	//	ev.put(L"ArrayType", L"Grid");
-	//	ev.put(L"xy", PhotonPoint{ Point{values.width(), values.height()} });
-	//	ev.put(L"values", data.data(), data.size());
-
-	//	m_client->opRaiseEvent(reliable, ev, eventCode);
-	//}
 
 	String SivPhoton::getUserName() const
 	{
@@ -1864,7 +1113,7 @@ namespace s3d
 		}
 	}
 
-	void SivPhoton::connectReturn(const int32 errorCode, const String& errorString, const String& region, const String& cluster)
+	void SivPhoton::connectReturn([[maybe_unused]] const int32 errorCode, const String& errorString, const String& region, const String& cluster)
 	{
 		if (m_verbose)
 		{
@@ -2005,46 +1254,6 @@ namespace s3d
 	{
 		PrintCustomEventAction(U"Array<String>", playerID, eventCode, data);
 	}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<int32>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Grid<int32>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<double>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Grid<double>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<float>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Grid<float>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<bool>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Grid<bool>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<String>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Grid<String>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
 
 	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const ColorF& data)
 	{
@@ -2191,236 +1400,12 @@ namespace s3d
 		PrintCustomEventAction(U"Array<Float4>", playerID, eventCode, data);
 	}
 
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<Mat3x2>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Array<Mat3x2>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<Rect>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Array<Rect>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<Circle>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Array<Circle>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<Line>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Array<Line>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<Triangle>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Array<Triangle>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<RectF>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Array<RectF>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<Quad>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Array<Quad>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<Ellipse>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Array<Ellipse>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<RoundRect>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Array<RoundRect>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, Deserializer<MemoryReader>& reader)
+	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, [[maybe_unused]] Deserializer<MemoryReader>& reader)
 	{
 		Print << U"[SivPhoton] SivPhoton::customEventAction(Deserializer<MemoryReader>)";
 		Print << U"[SivPhoton] playerID: " << playerID;
 		Print << U"[SivPhoton] eventCode: " << eventCode;
 	}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<Point>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Grid<Point>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<Vec2>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Grid<Vec2>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<Rect>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Grid<Rect>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<Circle>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Grid<Circle>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<ColorF>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Grid<ColorF>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<Color>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Grid<Color>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<HSV>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Grid<HSV>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<Line>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Grid<Line>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<Triangle>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Grid<Triangle>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<RectF>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Grid<RectF>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<Quad>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Grid<Quad>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<Ellipse>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Grid<Ellipse>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<RoundRect>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Grid<RoundRect>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<Vec3>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Grid<Vec3>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<Vec4>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Grid<Vec4>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<Float2>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Grid<Float2>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<Mat3x2>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Grid<Mat3x2>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<Float3>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Grid<Float3>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
-
-	//void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Grid<Float4>& data)
-	//{
-	//	Print << U"SivPhoton::customEventAction(Grid<Float4>)";
-	//	Print << U"playerID: " << playerID;
-	//	Print << U"eventCode: " << eventCode;
-	//	Print << U"data: " << data;
-	//}
 
 	ExitGames::LoadBalancing::Client& SivPhoton::getClient()
 	{
