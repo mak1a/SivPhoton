@@ -1,4 +1,21 @@
-﻿# define NOMINMAX
+﻿//-----------------------------------------------
+//
+//	This file is part of the Siv3D Engine.
+//
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
+//
+//	Licensed under the MIT License.
+//
+//-----------------------------------------------
+
+//-----------------------------------------------
+//	Author (OpenSiv3D 実装会)
+//	- mak1a
+//  - 
+//-----------------------------------------------
+
+# define NOMINMAX
 # include <LoadBalancing-cpp/inc/Client.h>
 # include "Multiplayer_Photon.hpp"
 
@@ -92,8 +109,8 @@ namespace s3d
 
 
 	// Color関連
-	using PhotonColorF = CustomType_Photon<ColorF, 0>;
-	using PhotonColor = CustomType_Photon<Color, 1>;
+	using PhotonColor = CustomType_Photon<Color, 0>;
+	using PhotonColorF = CustomType_Photon<ColorF, 1>;
 	using PhotonHSV = CustomType_Photon<HSV, 2>;
 
 	// 座標関連
@@ -130,8 +147,8 @@ namespace s3d
 		explicit PhotonDetail(Multiplayer_Photon& context)
 			: m_context{ context }
 		{
-			m_receiveEventFunctions.emplace(uint8{ 0 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<ColorF, 0>(playerID, eventCode, data); });
-			m_receiveEventFunctions.emplace(uint8{ 1 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Color, 1>(playerID, eventCode, data); });
+			m_receiveEventFunctions.emplace(uint8{ 0 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Color, 0>(playerID, eventCode, data); });
+			m_receiveEventFunctions.emplace(uint8{ 1 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<ColorF, 1>(playerID, eventCode, data); });
 			m_receiveEventFunctions.emplace(uint8{ 2 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<HSV, 2>(playerID, eventCode, data); });
 			m_receiveEventFunctions.emplace(uint8{ 3 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Point, 3>(playerID, eventCode, data); });
 			m_receiveEventFunctions.emplace(uint8{ 4 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Vec2, 4>(playerID, eventCode, data); });
@@ -150,8 +167,8 @@ namespace s3d
 			m_receiveEventFunctions.emplace(uint8{ 17 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<Ellipse, 17>(playerID, eventCode, data); });
 			m_receiveEventFunctions.emplace(uint8{ 18 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<RoundRect, 18>(playerID, eventCode, data); });
 			
-			m_receiveArrayEventFunctions.emplace(uint8{ 0 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<ColorF, 0>(playerID, eventCode, data); });
-			m_receiveArrayEventFunctions.emplace(uint8{ 1 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<Color, 1>(playerID, eventCode, data); });
+			m_receiveArrayEventFunctions.emplace(uint8{ 0 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<Color, 0>(playerID, eventCode, data); });
+			m_receiveArrayEventFunctions.emplace(uint8{ 1 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<ColorF, 1>(playerID, eventCode, data); });
 			m_receiveArrayEventFunctions.emplace(uint8{ 2 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<HSV, 2>(playerID, eventCode, data); });
 			m_receiveArrayEventFunctions.emplace(uint8{ 3 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<Point, 3>(playerID, eventCode, data); });
 			m_receiveArrayEventFunctions.emplace(uint8{ 4 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<Vec2, 4>(playerID, eventCode, data); });
@@ -427,8 +444,8 @@ namespace s3d
 		, m_isUsePhoton{ false }
 	{
 
-		PhotonColorF::registerType();
 		PhotonColor::registerType();
+		PhotonColorF::registerType();
 		PhotonHSV::registerType();
 		PhotonPoint::registerType();
 		PhotonVec2::registerType();
@@ -451,8 +468,8 @@ namespace s3d
 
 	Multiplayer_Photon::~Multiplayer_Photon()
 	{
-		PhotonColorF::unregisterType();
 		PhotonColor::unregisterType();
+		PhotonColorF::unregisterType();
 		PhotonHSV::unregisterType();
 		PhotonPoint::unregisterType();
 		PhotonVec2::unregisterType();
@@ -577,16 +594,16 @@ namespace s3d
 
 namespace s3d
 {
-	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const ColorF& value)
-	{
-		constexpr bool reliable = true;
-		m_client->opRaiseEvent(reliable, PhotonColorF{ value }, eventCode);
-	}
-
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Color& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonColor{ value }, eventCode);
+	}
+
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const ColorF& value)
+	{
+		constexpr bool reliable = true;
+		m_client->opRaiseEvent(reliable, PhotonColorF{ value }, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const HSV& value)
@@ -691,11 +708,11 @@ namespace s3d
 		m_client->opRaiseEvent(reliable, PhotonRoundRect{ value }, eventCode);
 	}
 
-	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<ColorF>& values)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<Color>& values)
 	{
 		constexpr bool reliable = true;
 
-		Array<PhotonColorF> data;
+		Array<PhotonColor> data;
 		data.reserve(values.size());
 
 		for (const auto& v : values)
@@ -710,11 +727,11 @@ namespace s3d
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<Color>& values)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<ColorF>& values)
 	{
 		constexpr bool reliable = true;
 
-		Array<PhotonColor> data;
+		Array<PhotonColorF> data;
 		data.reserve(values.size());
 
 		for (const auto& v : values)
@@ -1255,14 +1272,14 @@ namespace s3d
 		PrintCustomEventAction(U"Array<String>", playerID, eventCode, data);
 	}
 
-	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const ColorF& data)
-	{
-		PrintCustomEventAction(U"ColorF", playerID, eventCode, data);
-	}
-
 	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Color& data)
 	{
 		PrintCustomEventAction(U"Color", playerID, eventCode, data);
+	}
+
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const ColorF& data)
+	{
+		PrintCustomEventAction(U"ColorF", playerID, eventCode, data);
 	}
 
 	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const HSV& data)
@@ -1350,14 +1367,14 @@ namespace s3d
 		PrintCustomEventAction(U"RoundRect", playerID, eventCode, data);
 	}
 
-	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Array<ColorF>& data)
-	{
-		PrintCustomEventAction(U"Array<ColorF>", playerID, eventCode, data);
-	}
-
 	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Array<Color>& data)
 	{
 		PrintCustomEventAction(U"Array<Color>", playerID, eventCode, data);
+	}
+
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Array<ColorF>& data)
+	{
+		PrintCustomEventAction(U"Array<ColorF>", playerID, eventCode, data);
 	}
 
 	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Array<HSV>& data)

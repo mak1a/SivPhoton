@@ -1,42 +1,46 @@
-﻿
+﻿//-----------------------------------------------
+//
+//	This file is part of the Siv3D Engine.
+//
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
+//
+//	Licensed under the MIT License.
+//
+//-----------------------------------------------
+
+//-----------------------------------------------
+//	Author (OpenSiv3D 実装会)
+//	- mak1a
+//  - 
+//-----------------------------------------------
 # pragma once
 # include <Siv3D.hpp>
 
 # if SIV3D_PLATFORM(WINDOWS)
-# if SIV3D_BUILD(DEBUG)
-#   pragma comment (lib, "Common-cpp/lib/Common-cpp_vc16_debug_windows_mt_x64")
-#   pragma comment (lib, "Photon-cpp/lib/Photon-cpp_vc16_debug_windows_mt_x64")
-#   pragma comment (lib, "LoadBalancing-cpp/lib/LoadBalancing-cpp_vc16_debug_windows_mt_x64")
-# else
-#   pragma comment (lib, "Common-cpp/lib/Common-cpp_vc16_release_windows_mt_x64")
-#   pragma comment (lib, "Photon-cpp/lib/Photon-cpp_vc16_release_windows_mt_x64")
-#   pragma comment (lib, "LoadBalancing-cpp/lib/LoadBalancing-cpp_vc16_release_windows_mt_x64")
-# endif
+#	if SIV3D_BUILD(DEBUG)
+#		pragma comment (lib, "Common-cpp/lib/Common-cpp_vc16_debug_windows_mt_x64")
+#		pragma comment (lib, "Photon-cpp/lib/Photon-cpp_vc16_debug_windows_mt_x64")
+#		pragma comment (lib, "LoadBalancing-cpp/lib/LoadBalancing-cpp_vc16_debug_windows_mt_x64")
+#	else
+#		pragma comment (lib, "Common-cpp/lib/Common-cpp_vc16_release_windows_mt_x64")
+#		pragma comment (lib, "Photon-cpp/lib/Photon-cpp_vc16_release_windows_mt_x64")
+#		pragma comment (lib, "LoadBalancing-cpp/lib/LoadBalancing-cpp_vc16_release_windows_mt_x64")
+#	endif
 # endif
 
 // Photono SDK クラスの前方宣言
-namespace ExitGames
+namespace ExitGames::LoadBalancing
 {
-	namespace LoadBalancing
-	{
-		class Listener;
-		class Client;
-	}
+	class Listener;
+	class Client;
 }
 
 namespace s3d
 {
 	namespace NetworkSystem
 	{
-		/// @brief 暗号化された Photon アプリケーション ID を復号します。
-		/// @param encryptedPhotonAppID 暗号化された Photon アプリケーション ID
-		/// @return 復号された Photon アプリケーション ID
-		inline String DecryptPhotonAppID(StringView encryptedPhotonAppID)
-		{
-			// [Siv3D ToDo] あとで実装
-			return String{ encryptedPhotonAppID };
-		}
-
+		/// @brief 既存のランダムマッチが見つからなかった時のエラーコード
 		inline constexpr int32 NoRandomMatchFound = (0x7FFF - 7);
 	}
 
@@ -66,6 +70,7 @@ namespace s3d
 
 		/// @brief Photon サーバへの接続を試みます。
 		/// @param userName ユーザ名
+		/// @param defaultRoomName ルーム名
 		void connect(StringView userName = U"", const Optional<String>& defaultRoomName = unspecified);
 
 		/// @brief Photon サーバから切断を試みます。
@@ -97,12 +102,12 @@ namespace s3d
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const ColorF& value);
+		void opRaiseEvent(uint8 eventCode, const Color& value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Color& value);
+		void opRaiseEvent(uint8 eventCode, const ColorF& value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
@@ -192,12 +197,12 @@ namespace s3d
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Array<ColorF>& values);
+		void opRaiseEvent(uint8 eventCode, const Array<Color>& values);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Array<Color>& values);
+		void opRaiseEvent(uint8 eventCode, const Array<ColorF>& values);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
@@ -491,13 +496,13 @@ namespace s3d
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const ColorF& data);
+		virtual void customEventAction(int32 playerID, int32 eventCode, const Color& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Color& data);
+		virtual void customEventAction(int32 playerID, int32 eventCode, const ColorF& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
@@ -605,13 +610,13 @@ namespace s3d
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Array<ColorF>& data);
+		virtual void customEventAction(int32 playerID, int32 eventCode, const Array<Color>& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Array<Color>& data);
+		virtual void customEventAction(int32 playerID, int32 eventCode, const Array<ColorF>& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
