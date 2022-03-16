@@ -954,14 +954,14 @@ namespace s3d
 	Array<String> Multiplayer_Photon::getRoomNameList() const
 	{
 		const auto roomNameList = m_client->getRoomNameList();
-		Array<String> result;
+		Array<String> results(roomNameList.getSize());
 
 		for (uint32 i = 0; i < roomNameList.getSize(); ++i)
 		{
-			result << detail::ToString(roomNameList[i]);
+			results[i] = detail::ToString(roomNameList[i]);
 		}
 
-		return result;
+		return results;
 	}
 
 	bool Multiplayer_Photon::isInRoom() const
