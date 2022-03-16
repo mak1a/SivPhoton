@@ -141,7 +141,7 @@ void Main()
 		font(U"getMaxPlayersInCurrentRoom: {}"_fmt(network.getMaxPlayersInCurrentRoom())).draw(520, 450);
 		font(U"getIsOpenInCurrentRoom: {}"_fmt(network.getIsOpenInCurrentRoom())).draw(520, 480);
 
-		font(U"localPlayerID: {}"_fmt(network.localPlayerID())).draw(520, 510);
+		font(U"localPlayerID: {}"_fmt(network.getLocalPlayerID())).draw(520, 510);
 		font(U"isMasterClient: {}"_fmt(network.isMasterClient())).draw(520, 540);
 
 		if (network.isMasterClient())

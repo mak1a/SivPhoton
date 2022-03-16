@@ -55,7 +55,7 @@ namespace s3d
 			: ExitGames::Common::CustomType<CustomType_Photon<Type, customTypeIndex>, customTypeIndex>{}
 			, m_value{ toCopy.m_value } {}
 
-		virtual ~CustomType_Photon() {}
+		virtual ~CustomType_Photon() = default;
 
 		CustomType_Photon& operator=(const CustomType_Photon& toCopy)
 		{
@@ -97,7 +97,7 @@ namespace s3d
 			return retStr = detail::ToJString(Format(m_value));
 		}
 
-		Type& getValue()
+		const Type& getValue() const noexcept
 		{
 			return m_value;
 		}
@@ -136,6 +136,54 @@ namespace s3d
 
 	// Byte型
 	using PhotonByte = CustomType_Photon<Byte, 19>;
+
+	static void RegisterTypes()
+	{
+		PhotonColor::registerType();
+		PhotonColorF::registerType();
+		PhotonHSV::registerType();
+		PhotonPoint::registerType();
+		PhotonVec2::registerType();
+		PhotonVec3::registerType();
+		PhotonVec4::registerType();
+		PhotonFloat2::registerType();
+		PhotonFloat3::registerType();
+		PhotonFloat4::registerType();
+		PhotonMat3x2::registerType();
+		PhotonRect::registerType();
+		PhotonCircle::registerType();
+		PhotonLine::registerType();
+		PhotonTriangle::registerType();
+		PhotonRectF::registerType();
+		PhotonQuad::registerType();
+		PhotonEllipse::registerType();
+		PhotonRoundRect::registerType();
+		PhotonByte::registerType();
+	}
+
+	static void UnregisterTypes()
+	{
+		PhotonColor::unregisterType();
+		PhotonColorF::unregisterType();
+		PhotonHSV::unregisterType();
+		PhotonPoint::unregisterType();
+		PhotonVec2::unregisterType();
+		PhotonVec3::unregisterType();
+		PhotonVec4::unregisterType();
+		PhotonFloat2::unregisterType();
+		PhotonFloat3::unregisterType();
+		PhotonFloat4::unregisterType();
+		PhotonMat3x2::unregisterType();
+		PhotonRect::unregisterType();
+		PhotonCircle::unregisterType();
+		PhotonLine::unregisterType();
+		PhotonTriangle::unregisterType();
+		PhotonRectF::unregisterType();
+		PhotonQuad::unregisterType();
+		PhotonEllipse::unregisterType();
+		PhotonRoundRect::unregisterType();
+		PhotonByte::unregisterType();
+	}
 }
 
 namespace s3d
@@ -188,7 +236,7 @@ namespace s3d
 		void connectionErrorReturn(const int errorCode) override
 		{
 			m_context.connectionErrorReturn(errorCode);
-			m_context.m_isUsePhoton = false;
+			m_context.m_isActive = false;
 		}
 
 		void clientErrorReturn([[maybe_unused]] const int errorCode) override
@@ -256,71 +304,70 @@ namespace s3d
 					switch (type)
 					{
 					case ExitGames::Common::TypeCode::INTEGER:
-					{
-						auto values = ExitGames::Common::ValueObject<int*>(eventDataContent.getValue(L"values")).getDataCopy();
-						auto length = *(ExitGames::Common::ValueObject<int*>(eventDataContent.getValue(L"values"))).getSizes();
-
-						Array<int32> data(length);
-						for (size_t i = 0; i < length; ++i)
 						{
-							data[i] = values[i];
+							const auto values = ExitGames::Common::ValueObject<int*>(eventDataContent.getValue(L"values")).getDataCopy();
+							const auto length = *(ExitGames::Common::ValueObject<int*>(eventDataContent.getValue(L"values"))).getSizes();
+
+							Array<int32> data(length);
+							for (size_t i = 0; i < length; ++i)
+							{
+								data[i] = values[i];
+							}
+							m_context.customEventAction(playerID, eventCode, data);
+							return;
 						}
-						m_context.customEventAction(playerID, eventCode, data);
-						return;
-					}
 					case ExitGames::Common::TypeCode::DOUBLE:
-					{
-						auto values = ExitGames::Common::ValueObject<double*>(eventDataContent.getValue(L"values")).getDataCopy();
-						auto length = *(ExitGames::Common::ValueObject<double*>(eventDataContent.getValue(L"values"))).getSizes();
-
-						Array<double> data(length);
-						for (size_t i = 0; i < length; ++i)
 						{
-							data[i] = values[i];
+							const auto values = ExitGames::Common::ValueObject<double*>(eventDataContent.getValue(L"values")).getDataCopy();
+							const auto length = *(ExitGames::Common::ValueObject<double*>(eventDataContent.getValue(L"values"))).getSizes();
+
+							Array<double> data(length);
+							for (size_t i = 0; i < length; ++i)
+							{
+								data[i] = values[i];
+							}
+							m_context.customEventAction(playerID, eventCode, data);
+							return;
 						}
-						m_context.customEventAction(playerID, eventCode, data);
-						return;
-					}
 					case ExitGames::Common::TypeCode::FLOAT:
-					{
-						auto values = ExitGames::Common::ValueObject<float*>(eventDataContent.getValue(L"values")).getDataCopy();
-						auto length = *(ExitGames::Common::ValueObject<float*>(eventDataContent.getValue(L"values"))).getSizes();
-
-						Array<float> data(length);
-						for (size_t i = 0; i < length; ++i)
 						{
-							data[i] = values[i];
+							const auto values = ExitGames::Common::ValueObject<float*>(eventDataContent.getValue(L"values")).getDataCopy();
+							const auto length = *(ExitGames::Common::ValueObject<float*>(eventDataContent.getValue(L"values"))).getSizes();
+
+							Array<float> data(length);
+							for (size_t i = 0; i < length; ++i)
+							{
+								data[i] = values[i];
+							}
+							m_context.customEventAction(playerID, eventCode, data);
+							return;
 						}
-						m_context.customEventAction(playerID, eventCode, data);
-						return;
-					}
 					case ExitGames::Common::TypeCode::BOOLEAN:
-					{
-						auto values = ExitGames::Common::ValueObject<bool*>(eventDataContent.getValue(L"values")).getDataCopy();
-						auto length = *(ExitGames::Common::ValueObject<bool*>(eventDataContent.getValue(L"values"))).getSizes();
-
-						Array<bool> data(length);
-						for (size_t i = 0; i < length; ++i)
 						{
-							data[i] = values[i];
+							const auto values = ExitGames::Common::ValueObject<bool*>(eventDataContent.getValue(L"values")).getDataCopy();
+							const auto length = *(ExitGames::Common::ValueObject<bool*>(eventDataContent.getValue(L"values"))).getSizes();
+
+							Array<bool> data(length);
+							for (size_t i = 0; i < length; ++i)
+							{
+								data[i] = values[i];
+							}
+							m_context.customEventAction(playerID, eventCode, data);
+							return;
 						}
-						m_context.customEventAction(playerID, eventCode, data);
-						return;
-					}
 					case ExitGames::Common::TypeCode::STRING:
-					{
-						auto values = ExitGames::Common::ValueObject<ExitGames::Common::JString*>(eventDataContent.getValue(L"values")).getDataCopy();
-						auto length = *(ExitGames::Common::ValueObject<ExitGames::Common::JString*>(eventDataContent.getValue(L"values"))).getSizes();
-
-						Array<String> data(length);
-						for (size_t i = 0; i < length; ++i)
 						{
-							// hatena
-							data[i] = detail::ToString(values[i]);
+							const auto values = ExitGames::Common::ValueObject<ExitGames::Common::JString*>(eventDataContent.getValue(L"values")).getDataCopy();
+							const auto length = *(ExitGames::Common::ValueObject<ExitGames::Common::JString*>(eventDataContent.getValue(L"values"))).getSizes();
+
+							Array<String> data(length);
+							for (size_t i = 0; i < length; ++i)
+							{
+								data[i] = detail::ToString(values[i]);
+							}
+							m_context.customEventAction(playerID, eventCode, data);
+							return;
 						}
-						m_context.customEventAction(playerID, eventCode, data);
-						return;
-					}
 					default:
 						break;
 					}
@@ -360,7 +407,7 @@ namespace s3d
 			m_context.connectReturn(errorCode, errorText, regionText, clusterText);
 			if (errorCode)
 			{
-				m_context.m_isUsePhoton = false;
+				m_context.m_isActive = false;
 			}
 		}
 
@@ -368,7 +415,7 @@ namespace s3d
 		void disconnectReturn() override
 		{
 			m_context.disconnectReturn();
-			m_context.m_isUsePhoton = false;
+			m_context.m_isActive = false;
 		}
 
 		// 
@@ -399,15 +446,15 @@ namespace s3d
 		template <class Type, uint8 N>
 		void receivedCustomType(const int playerID, const nByte eventCode, const ExitGames::Common::Object& eventContent)
 		{
-			auto value = ExitGames::Common::ValueObject<CustomType_Photon<Type, N>>(eventContent).getDataCopy().getValue();
+			const auto value = ExitGames::Common::ValueObject<CustomType_Photon<Type, N>>(eventContent).getDataCopy().getValue();
 			m_context.customEventAction(playerID, eventCode, value);
 		}
 
 		template <class Type, uint8 N>
 		void receivedCustomArrayType(const int playerID, const nByte eventCode, const ExitGames::Common::Object* eventContent)
 		{
-			CustomType_Photon<Type, N>* values = ExitGames::Common::ValueObject<CustomType_Photon<Type, N>*>(eventContent).getDataCopy();
-			auto length = *(ExitGames::Common::ValueObject<CustomType_Photon<Type, N>*>(eventContent)).getSizes();
+			const CustomType_Photon<Type, N>* values = ExitGames::Common::ValueObject<CustomType_Photon<Type, N>*>(eventContent).getDataCopy();
+			const auto length = *(ExitGames::Common::ValueObject<CustomType_Photon<Type, N>*>(eventContent)).getSizes();
 
 			Array<Type> data(length);
 			for (size_t i = 0; i < length; ++i)
@@ -420,13 +467,13 @@ namespace s3d
 		template <class Type, uint8 N>
 		void receivedCustomArrayByte(const int playerID, const nByte eventCode, const ExitGames::Common::Object* eventContent)
 		{
-			CustomType_Photon<Type, N>* values = ExitGames::Common::ValueObject<CustomType_Photon<Type, N>*>(eventContent).getDataCopy();
-			auto length = *(ExitGames::Common::ValueObject<CustomType_Photon<Type, N>*>(eventContent)).getSizes();
+			const CustomType_Photon<Type, N>* values = ExitGames::Common::ValueObject<CustomType_Photon<Type, N>*>(eventContent).getDataCopy();
+			const auto length = *(ExitGames::Common::ValueObject<CustomType_Photon<Type, N>*>(eventContent)).getSizes();
 
 			Array<Type> data(length);
 			for (size_t i = 0; i < length; ++i)
 			{
-				data[i] =  values[i].getValue();
+				data[i] = values[i].getValue();
 			}
 
 			Deserializer<MemoryReader> reader{ data.data(), data.size() };
@@ -438,88 +485,30 @@ namespace s3d
 namespace s3d
 {
 	Multiplayer_Photon::Multiplayer_Photon(const StringView secretPhotonAppID, const StringView photonAppVersion, const bool verbose)
-		: m_listener{ std::make_unique<PhotonDetail>(*this) }
-		, m_client{ std::make_unique<ExitGames::LoadBalancing::Client>(*m_listener, detail::ToJString(secretPhotonAppID), detail::ToJString(photonAppVersion)) }
-		, m_verbose{ verbose }
-		, m_isUsePhoton{ false }
 	{
-
-		PhotonColor::registerType();
-		PhotonColorF::registerType();
-		PhotonHSV::registerType();
-		PhotonPoint::registerType();
-		PhotonVec2::registerType();
-		PhotonVec3::registerType();
-		PhotonVec4::registerType();
-		PhotonFloat2::registerType();
-		PhotonFloat3::registerType();
-		PhotonFloat4::registerType();
-		PhotonMat3x2::registerType();
-		PhotonRect::registerType();
-		PhotonCircle::registerType();
-		PhotonLine::registerType();
-		PhotonTriangle::registerType();
-		PhotonRectF::registerType();
-		PhotonQuad::registerType();
-		PhotonEllipse::registerType();
-		PhotonRoundRect::registerType();
-		PhotonByte::registerType();
+		init(secretPhotonAppID, photonAppVersion, verbose);
 	}
 
 	Multiplayer_Photon::~Multiplayer_Photon()
 	{
-		PhotonColor::unregisterType();
-		PhotonColorF::unregisterType();
-		PhotonHSV::unregisterType();
-		PhotonPoint::unregisterType();
-		PhotonVec2::unregisterType();
-		PhotonVec3::unregisterType();
-		PhotonVec4::unregisterType();
-		PhotonFloat2::unregisterType();
-		PhotonFloat3::unregisterType();
-		PhotonFloat4::unregisterType();
-		PhotonMat3x2::unregisterType();
-		PhotonRect::unregisterType();
-		PhotonCircle::unregisterType();
-		PhotonLine::unregisterType();
-		PhotonTriangle::unregisterType();
-		PhotonRectF::unregisterType();
-		PhotonQuad::unregisterType();
-		PhotonEllipse::unregisterType();
-		PhotonRoundRect::unregisterType();
-		PhotonByte::unregisterType();
+		UnregisterTypes();
 
 		disconnect();
 	}
 
 	void Multiplayer_Photon::init(const StringView secretPhotonAppID, const StringView photonAppVersion, const bool verbose)
 	{
+		if (m_listener) // すでに初期化済みであれば何もしない
+		{
+			return;
+		}
+
 		m_listener = std::make_unique<PhotonDetail>(*this);
 		m_client = std::make_unique<ExitGames::LoadBalancing::Client>(*m_listener, detail::ToJString(secretPhotonAppID), detail::ToJString(photonAppVersion));
 		m_verbose = verbose;
-		m_isUsePhoton = false;
+		m_isActive = false;
 
-		// デフォルトコンストラクタを使用していた事を想定
-		PhotonColorF::registerType();
-		PhotonColor::registerType();
-		PhotonHSV::registerType();
-		PhotonPoint::registerType();
-		PhotonVec2::registerType();
-		PhotonVec3::registerType();
-		PhotonVec4::registerType();
-		PhotonFloat2::registerType();
-		PhotonFloat3::registerType();
-		PhotonFloat4::registerType();
-		PhotonMat3x2::registerType();
-		PhotonRect::registerType();
-		PhotonCircle::registerType();
-		PhotonLine::registerType();
-		PhotonTriangle::registerType();
-		PhotonRectF::registerType();
-		PhotonQuad::registerType();
-		PhotonEllipse::registerType();
-		PhotonRoundRect::registerType();
-		PhotonByte::registerType();
+		RegisterTypes();
 	}
 
 	void Multiplayer_Photon::connect(const StringView userName, const Optional<String>& defaultRoomName)
@@ -540,7 +529,7 @@ namespace s3d
 		}
 
 		m_client->fetchServerTimestamp();
-		m_isUsePhoton = true;
+		m_isActive = true;
 	}
 
 	void Multiplayer_Photon::disconnect()
@@ -594,84 +583,71 @@ namespace s3d
 
 namespace s3d
 {
+	constexpr bool Reliable = true;
+
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const bool value)
 	{
-		constexpr bool reliable = true;
-		m_client->opRaiseEvent(reliable, value, eventCode);
+		m_client->opRaiseEvent(Reliable, value, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const int32 value)
 	{
-		constexpr bool reliable = true;
-		m_client->opRaiseEvent(reliable, value, eventCode);
+		m_client->opRaiseEvent(Reliable, value, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const float value)
 	{
-		constexpr bool reliable = true;
-		m_client->opRaiseEvent(reliable, value, eventCode);
+		m_client->opRaiseEvent(Reliable, value, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const double value)
 	{
-		constexpr bool reliable = true;
-		m_client->opRaiseEvent(reliable, value, eventCode);
+		m_client->opRaiseEvent(Reliable, value, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const StringView value)
 	{
-		constexpr bool reliable = true;
-		m_client->opRaiseEvent(reliable, detail::ToJString(value), eventCode);
+		m_client->opRaiseEvent(Reliable, detail::ToJString(value), eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<bool>& values)
 	{
-		constexpr bool reliable = true;
-
 		ExitGames::Common::Hashtable ev;
 		ev.put(L"ArrayType", L"Array");
 		ev.put(L"values", values.data(), static_cast<int16>(values.size()));
 
-		m_client->opRaiseEvent(reliable, ev, eventCode);
+		m_client->opRaiseEvent(Reliable, ev, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<int32>& values)
 	{
-		constexpr bool reliable = true;
-
 		ExitGames::Common::Hashtable ev;
 		ev.put(L"ArrayType", L"Array");
 		ev.put(L"values", values.data(), static_cast<int16>(values.size()));
 
-		m_client->opRaiseEvent(reliable, ev, eventCode);
+		m_client->opRaiseEvent(Reliable, ev, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<float>& values)
 	{
-		constexpr bool reliable = true;
-
 		ExitGames::Common::Hashtable ev;
 		ev.put(L"ArrayType", L"Array");
 		ev.put(L"values", values.data(), static_cast<int16>(values.size()));
 
-		m_client->opRaiseEvent(reliable, ev, eventCode);
+		m_client->opRaiseEvent(Reliable, ev, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<double>& values)
 	{
-		constexpr bool reliable = true;
-
 		ExitGames::Common::Hashtable ev;
 		ev.put(L"ArrayType", L"Array");
 		ev.put(L"values", values.data(), static_cast<int16>(values.size()));
 
-		m_client->opRaiseEvent(reliable, ev, eventCode);
+		m_client->opRaiseEvent(Reliable, ev, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<String>& values)
 	{
-		constexpr bool reliable = true;
-
 		Array<ExitGames::Common::JString> data;
 		for (const auto& v : values)
 		{
@@ -682,127 +658,106 @@ namespace s3d
 		ev.put(L"ArrayType", L"Array");
 		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
 
-		m_client->opRaiseEvent(reliable, ev, eventCode);
+		m_client->opRaiseEvent(Reliable, ev, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Color& value)
 	{
-		constexpr bool reliable = true;
-		m_client->opRaiseEvent(reliable, PhotonColor{ value }, eventCode);
+		m_client->opRaiseEvent(Reliable, PhotonColor{ value }, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const ColorF& value)
 	{
-		constexpr bool reliable = true;
-		m_client->opRaiseEvent(reliable, PhotonColorF{ value }, eventCode);
+		m_client->opRaiseEvent(Reliable, PhotonColorF{ value }, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const HSV& value)
 	{
-		constexpr bool reliable = true;
-		m_client->opRaiseEvent(reliable, PhotonHSV{ value }, eventCode);
+		m_client->opRaiseEvent(Reliable, PhotonHSV{ value }, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Point& value)
 	{
-		constexpr bool reliable = true;
-		m_client->opRaiseEvent(reliable, PhotonPoint{ value }, eventCode);
+		m_client->opRaiseEvent(Reliable, PhotonPoint{ value }, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Vec2& value)
 	{
-		constexpr bool reliable = true;
-		m_client->opRaiseEvent(reliable, PhotonVec2{ value }, eventCode);
+		m_client->opRaiseEvent(Reliable, PhotonVec2{ value }, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Vec3& value)
 	{
-		constexpr bool reliable = true;
-		m_client->opRaiseEvent(reliable, PhotonVec3{ value }, eventCode);
+		m_client->opRaiseEvent(Reliable, PhotonVec3{ value }, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Vec4& value)
 	{
-		constexpr bool reliable = true;
-		m_client->opRaiseEvent(reliable, PhotonVec4{ value }, eventCode);
+		m_client->opRaiseEvent(Reliable, PhotonVec4{ value }, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Float2& value)
 	{
-		constexpr bool reliable = true;
-		m_client->opRaiseEvent(reliable, PhotonFloat2{ value }, eventCode);
+		m_client->opRaiseEvent(Reliable, PhotonFloat2{ value }, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Float3& value)
 	{
-		constexpr bool reliable = true;
-		m_client->opRaiseEvent(reliable, PhotonFloat3{ value }, eventCode);
+		m_client->opRaiseEvent(Reliable, PhotonFloat3{ value }, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Float4& value)
 	{
-		constexpr bool reliable = true;
-		m_client->opRaiseEvent(reliable, PhotonFloat4{ value }, eventCode);
+		m_client->opRaiseEvent(Reliable, PhotonFloat4{ value }, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Mat3x2& value)
 	{
-		constexpr bool reliable = true;
-		m_client->opRaiseEvent(reliable, PhotonMat3x2{ value }, eventCode);
+		m_client->opRaiseEvent(Reliable, PhotonMat3x2{ value }, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Rect& value)
 	{
-		constexpr bool reliable = true;
-		m_client->opRaiseEvent(reliable, PhotonRect{ value }, eventCode);
+		m_client->opRaiseEvent(Reliable, PhotonRect{ value }, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Circle& value)
 	{
-		constexpr bool reliable = true;
-		m_client->opRaiseEvent(reliable, PhotonCircle{ value }, eventCode);
+		m_client->opRaiseEvent(Reliable, PhotonCircle{ value }, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Line& value)
 	{
-		constexpr bool reliable = true;
-		m_client->opRaiseEvent(reliable, PhotonLine{ value }, eventCode);
+		m_client->opRaiseEvent(Reliable, PhotonLine{ value }, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Triangle& value)
 	{
-		constexpr bool reliable = true;
-		m_client->opRaiseEvent(reliable, PhotonTriangle{ value }, eventCode);
+		m_client->opRaiseEvent(Reliable, PhotonTriangle{ value }, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const RectF& value)
 	{
-		constexpr bool reliable = true;
-		m_client->opRaiseEvent(reliable, PhotonRectF{ value }, eventCode);
+		m_client->opRaiseEvent(Reliable, PhotonRectF{ value }, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Quad& value)
 	{
-		constexpr bool reliable = true;
-		m_client->opRaiseEvent(reliable, PhotonQuad{ value }, eventCode);
+		m_client->opRaiseEvent(Reliable, PhotonQuad{ value }, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Ellipse& value)
 	{
-		constexpr bool reliable = true;
-		m_client->opRaiseEvent(reliable, PhotonEllipse{ value }, eventCode);
+		m_client->opRaiseEvent(Reliable, PhotonEllipse{ value }, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const RoundRect& value)
 	{
-		constexpr bool reliable = true;
-		m_client->opRaiseEvent(reliable, PhotonRoundRect{ value }, eventCode);
+		m_client->opRaiseEvent(Reliable, PhotonRoundRect{ value }, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<Color>& values)
 	{
-		constexpr bool reliable = true;
-
 		Array<PhotonColor> data;
 		data.reserve(values.size());
 
@@ -815,13 +770,11 @@ namespace s3d
 		ev.put(L"ArrayType", L"Array");
 		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
 
-		m_client->opRaiseEvent(reliable, ev, eventCode);
+		m_client->opRaiseEvent(Reliable, ev, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<ColorF>& values)
 	{
-		constexpr bool reliable = true;
-
 		Array<PhotonColorF> data;
 		data.reserve(values.size());
 
@@ -834,13 +787,11 @@ namespace s3d
 		ev.put(L"ArrayType", L"Array");
 		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
 
-		m_client->opRaiseEvent(reliable, ev, eventCode);
+		m_client->opRaiseEvent(Reliable, ev, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<HSV>& values)
 	{
-		constexpr bool reliable = true;
-
 		Array<PhotonHSV> data;
 		data.reserve(values.size());
 
@@ -853,13 +804,11 @@ namespace s3d
 		ev.put(L"ArrayType", L"Array");
 		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
 
-		m_client->opRaiseEvent(reliable, ev, eventCode);
+		m_client->opRaiseEvent(Reliable, ev, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<Point>& values)
 	{
-		constexpr bool reliable = true;
-
 		Array<PhotonPoint> data;
 		data.reserve(values.size());
 
@@ -872,13 +821,11 @@ namespace s3d
 		ev.put(L"ArrayType", L"Array");
 		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
 
-		m_client->opRaiseEvent(reliable, ev, eventCode);
+		m_client->opRaiseEvent(Reliable, ev, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<Vec2>& values)
 	{
-		constexpr bool reliable = true;
-
 		Array<PhotonVec2> data;
 		data.reserve(values.size());
 
@@ -891,13 +838,11 @@ namespace s3d
 		ev.put(L"ArrayType", L"Array");
 		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
 
-		m_client->opRaiseEvent(reliable, ev, eventCode);
+		m_client->opRaiseEvent(Reliable, ev, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<Vec3>& values)
 	{
-		constexpr bool reliable = true;
-
 		Array<PhotonVec3> data;
 		data.reserve(values.size());
 
@@ -910,13 +855,11 @@ namespace s3d
 		ev.put(L"ArrayType", L"Array");
 		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
 
-		m_client->opRaiseEvent(reliable, ev, eventCode);
+		m_client->opRaiseEvent(Reliable, ev, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<Vec4>& values)
 	{
-		constexpr bool reliable = true;
-
 		Array<PhotonVec4> data;
 		data.reserve(values.size());
 
@@ -929,13 +872,11 @@ namespace s3d
 		ev.put(L"ArrayType", L"Array");
 		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
 
-		m_client->opRaiseEvent(reliable, ev, eventCode);
+		m_client->opRaiseEvent(Reliable, ev, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<Float2>& values)
 	{
-		constexpr bool reliable = true;
-
 		Array<PhotonFloat2> data;
 		data.reserve(values.size());
 
@@ -948,13 +889,11 @@ namespace s3d
 		ev.put(L"ArrayType", L"Array");
 		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
 
-		m_client->opRaiseEvent(reliable, ev, eventCode);
+		m_client->opRaiseEvent(Reliable, ev, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<Float3>& values)
 	{
-		constexpr bool reliable = true;
-
 		Array<PhotonFloat3> data;
 		data.reserve(values.size());
 
@@ -967,13 +906,11 @@ namespace s3d
 		ev.put(L"ArrayType", L"Array");
 		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
 
-		m_client->opRaiseEvent(reliable, ev, eventCode);
+		m_client->opRaiseEvent(Reliable, ev, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<Float4>& values)
 	{
-		constexpr bool reliable = true;
-
 		Array<PhotonFloat4> data;
 		data.reserve(values.size());
 
@@ -986,13 +923,11 @@ namespace s3d
 		ev.put(L"ArrayType", L"Array");
 		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
 
-		m_client->opRaiseEvent(reliable, ev, eventCode);
+		m_client->opRaiseEvent(Reliable, ev, eventCode);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, Serializer<MemoryWriter>& writer)
 	{
-		constexpr bool reliable = true;
-
 		Array<PhotonByte> data;
 		for (const auto& arrayByte = writer->getBlob().asArray(); const auto& v : arrayByte)
 		{
@@ -1003,7 +938,7 @@ namespace s3d
 		ev.put(L"ArrayType", L"Array");
 		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
 
-		m_client->opRaiseEvent(reliable, ev, eventCode);
+		m_client->opRaiseEvent(Reliable, ev, eventCode);
 	}
 
 	String Multiplayer_Photon::getUserName() const
@@ -1099,7 +1034,7 @@ namespace s3d
 		return m_client->getCountPlayersOnline();
 	}
 
-	Optional<int32> Multiplayer_Photon::localPlayerID() const
+	Optional<int32> Multiplayer_Photon::getLocalPlayerID() const
 	{
 		const int32 localPlayerID = m_client->getLocalPlayer().getNumber();
 
@@ -1116,9 +1051,9 @@ namespace s3d
 		return m_client->getLocalPlayer().getIsMasterClient();
 	}
 
-	bool Multiplayer_Photon::isUsePhoton() const noexcept
+	bool Multiplayer_Photon::isActive() const noexcept
 	{
-		return m_isUsePhoton;
+		return m_isActive;
 	}
 
 	void Multiplayer_Photon::connectionErrorReturn(const int32 errorCode)

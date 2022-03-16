@@ -311,7 +311,6 @@ namespace s3d
 		String getUserID() const;
 
 		/// @brief 存在するルーム名の一覧を返します。
-		/// @remark 自分でルームを作成してそれに参加すると表示されないっぽい (?)
 		/// @return 存在するルーム名の一覧
 		[[nodiscard]]
 		Array<String> getRoomNameList() const;
@@ -372,61 +371,61 @@ namespace s3d
 		/// @brief ルーム内でのプレイヤー ID を返します。
 		/// @return ルーム内でのプレイヤー ID, ルームに参加していない場合は none
 		[[nodiscard]]
-		Optional<int32> localPlayerID() const;
+		Optional<int32> getLocalPlayerID() const;
 
 		/// @brief 自分がマスタークライアントであるかを返します。
 		/// @return マスタークライアントである場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool isMasterClient() const;
 
-		/// @brief Photon SDKを使用しているかを返します。
-		/// @return  Photon SDKを使用している場合 true, それ以外の場合は false
+		/// @brief update() を呼ぶ必要がある状態であるかを返します。
+		/// @return  update() を呼ぶ必要がある状態である場合 true, それ以外の場合は false
 		[[nodiscard]]
-		bool isUsePhoton() const noexcept;
+		bool isActive() const noexcept;
 
-		/// @brief サーバへの接続に失敗した事を通知します。
+		/// @brief サーバへの接続に失敗したときに呼び出されます。
 		/// @param errorCode エラーコード
 		virtual void connectionErrorReturn(int32 errorCode);
 
-		/// @brief サーバに接続を試みた結果を通知します。
+		/// @brief サーバに接続を試みた結果が通知されるときに呼び出されます。
 		/// @param errorCode エラーコード
 		/// @param errorString エラー文字列
 		/// @param region 接続した地域
 		/// @param cluster サブ的なregion
 		virtual void connectReturn(int32 errorCode, const String& errorString, const String& region, const String& cluster);
 
-		/// @brief サーバから切断した事を通知します。
+		/// @brief サーバから切断したときに呼び出されます。
 		virtual void disconnectReturn();
 
-		/// @brief ルームから退出した事を通知します。
+		/// @brief ルームから退出したときに呼び出されます。
 		/// @param errorCode エラーコード
 		/// @param errorString エラー文字列
 		virtual void leaveRoomReturn(int32 errorCode, const String& errorString);
 
-		/// @brief ランダムルームへの入室を試みた結果を通知します。
+		/// @brief ランダムルームへの入室を試みた結果が通知されるときに呼び出されます。
 		/// @param localPlayerID ルーム内のプレイヤーID
 		/// @param errorCode エラーコード
 		/// @param errorString エラー文字列
 		virtual void joinRandomRoomReturn(int32 localPlayerID, int32 errorCode, const String& errorString);
 
-		/// @brief ルームへの入室を試みた結果を通知します。
+		/// @brief ルームへの入室を試みた結果が通知されるときに呼び出されます。
 		/// @param localPlayerID ルーム内のプレイヤーID
 		/// @param errorCode エラーコード
 		/// @param errorString エラー文字列
 		virtual void joinRoomReturn(int32 localPlayerID, int32 errorCode, const String& errorString);
 
-		/// @brief ルームに誰かが(自分も含めて)入室した事を通知します。
+		/// @brief ルームに誰かが(自分も含めて)入室したときに呼び出されます。
 		/// @param localPlayerID 入室したプレイヤーのID
 		/// @param playerIDs ルーム内のプレイヤー全員のID
 		/// @param isSelf 入室したのが自分である場合 true, それ以外の場合は false
 		virtual void joinRoomEventAction(int32 localPlayerID, const Array<int32>& playerIDs, bool isSelf);
 
-		/// @brief ルームから誰かが退室した事を通知します。
+		/// @brief ルームから誰かが退室したときに呼び出されます。
 		/// @param playerID 入室したプレイヤーのID
 		/// @param isInactive 再入室できる場合 true, それ以外の場合は false
 		virtual void leaveRoomEventAction(int32 playerID, bool isInactive);
 
-		/// @brief 部屋の作成を試みた結果を通知します。
+		/// @brief 部屋の作成を試みた結果が通知されるときに呼び出されます。
 		/// @param localPlayerID プレイヤーID
 		/// @param errorCode エラーコード
 		/// @param errorString エラー文字列
@@ -685,7 +684,7 @@ namespace s3d
 
 		std::unique_ptr<ExitGames::LoadBalancing::Client> m_client;
 
-		bool m_isUsePhoton = false;
+		bool m_isActive = false;
 
 		// モードが有効なときのみ Print するようにします。
 		bool m_verbose = true;
