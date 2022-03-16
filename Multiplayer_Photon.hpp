@@ -40,24 +40,25 @@ namespace s3d
 		inline constexpr int32 NoRandomMatchFound = (0x7FFF - 7);
 	}
 
-	class SivPhoton
+	/// @brief マルチプレイヤー用クラス (Photon バックエンド)
+	class Multiplayer_Photon
 	{
 	public:
 
 		SIV3D_NODISCARD_CXX20
-		SivPhoton() = default;
+		Multiplayer_Photon() = default;
 
-		/// @brief SivPhoton を作成します。
+		/// @brief マルチプレイヤー用クラスを作成します。
 		/// @param secretPhotonAppID Photon アプリケーション ID
 		/// @param photonAppVersion アプリケーションのバージョンです。
 		/// @param verbose trueの時にデバッグ用の文字列を表示します。
-		/// @remark アプリケーションバージョンが異なる SivPhoton とは通信できません。
+		/// @remark アプリケーションバージョンが異なる Multiplayer_Photon とは通信できません。
 		SIV3D_NODISCARD_CXX20
-		SivPhoton(StringView secretPhotonAppID, StringView photonAppVersion, bool verbose = true);
+		Multiplayer_Photon(StringView secretPhotonAppID, StringView photonAppVersion, bool verbose = true);
 
-		virtual ~SivPhoton();
+		virtual ~Multiplayer_Photon();
 
-		/// @brief SivPhoton を作成します。
+		/// @brief マルチプレイヤー用クラスを作成します。
 		/// @param secretPhotonAppID Photon アプリケーション ID
 		/// @param photonAppVersion アプリケーションのバージョンです。
 		/// @param verbose trueの時にデバッグ用の文字列を表示します。
@@ -673,7 +674,7 @@ namespace s3d
 
 	private:
 
-		class SivPhotonDetail;
+		class PhotonDetail;
 
 		std::unique_ptr<ExitGames::LoadBalancing::Listener> m_listener;
 
@@ -689,14 +690,13 @@ namespace s3d
 		[[nodiscard]]
 		ExitGames::LoadBalancing::Client& getClient();
 
-		// 後でippに実装を書く
 		template <class Type>
 		void PrintCustomEventAction(StringView type, int32 playerID, int32 eventCode, const Type& data)
 		{
-			Print << U"[SivPhoton] SivPhoton::customEventAction(" << type << U")";
-			Print << U"- [SivPhoton] playerID: " << playerID;
-			Print << U"- [SivPhoton] eventCode: " << eventCode;
-			Print << U"- [SivPhoton] data: " << data;
+			Print << U"[Multiplayer_Photon] Multiplayer_Photon::customEventAction(" << type << U")";
+			Print << U"- [Multiplayer_Photon] playerID: " << playerID;
+			Print << U"- [Multiplayer_Photon] eventCode: " << eventCode;
+			Print << U"- [Multiplayer_Photon] data: " << data;
 		}
 	};
 }

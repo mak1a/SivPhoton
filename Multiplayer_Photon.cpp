@@ -1,6 +1,6 @@
 ﻿# define NOMINMAX
 # include <LoadBalancing-cpp/inc/Client.h>
-# include "NetworkSystem.hpp"
+# include "Multiplayer_Photon.hpp"
 
 
 namespace s3d
@@ -21,26 +21,26 @@ namespace s3d
 	}
 
 	template <class Type, uint8 customTypeIndex>
-	class SivCustomType : public ExitGames::Common::CustomType<SivCustomType<Type, customTypeIndex>, customTypeIndex>
+	class CustomType_Photon : public ExitGames::Common::CustomType<CustomType_Photon<Type, customTypeIndex>, customTypeIndex>
 	{
 	public:
 
 		SIV3D_NODISCARD_CXX20
-		SivCustomType() = default;
+		CustomType_Photon() = default;
 
 		SIV3D_NODISCARD_CXX20
-		explicit SivCustomType(const Type& value)
-			: ExitGames::Common::CustomType<SivCustomType<Type, customTypeIndex>, customTypeIndex>{}
+		explicit CustomType_Photon(const Type& value)
+			: ExitGames::Common::CustomType<CustomType_Photon<Type, customTypeIndex>, customTypeIndex>{}
 			, m_value{ value } {}
 
 		SIV3D_NODISCARD_CXX20
-		SivCustomType(const SivCustomType& toCopy)
-			: ExitGames::Common::CustomType<SivCustomType<Type, customTypeIndex>, customTypeIndex>{}
+		CustomType_Photon(const CustomType_Photon& toCopy)
+			: ExitGames::Common::CustomType<CustomType_Photon<Type, customTypeIndex>, customTypeIndex>{}
 			, m_value{ toCopy.m_value } {}
 
-		virtual ~SivCustomType() {}
+		virtual ~CustomType_Photon() {}
 
-		SivCustomType& operator=(const SivCustomType& toCopy)
+		CustomType_Photon& operator=(const CustomType_Photon& toCopy)
 		{
 			m_value = toCopy.m_value;
 			return *this;
@@ -50,12 +50,12 @@ namespace s3d
 
 		bool compare(const ExitGames::Common::CustomTypeBase& other) const override
 		{
-			return m_value == ((SivCustomType&)other).m_value;
+			return m_value == ((CustomType_Photon&)other).m_value;
 		}
 
 		void duplicate(ExitGames::Common::CustomTypeBase* pRetVal) const override
 		{
-			*reinterpret_cast<SivCustomType*>(pRetVal) = *this;
+			*reinterpret_cast<CustomType_Photon*>(pRetVal) = *this;
 		}
 
 		void deserialize(const nByte* pData, [[maybe_unused]] const short length) override
@@ -92,42 +92,42 @@ namespace s3d
 
 
 	// Color関連
-	using PhotonColorF = SivCustomType<ColorF, 0>;
-	using PhotonColor = SivCustomType<Color, 1>;
-	using PhotonHSV = SivCustomType<HSV, 2>;
+	using PhotonColorF = CustomType_Photon<ColorF, 0>;
+	using PhotonColor = CustomType_Photon<Color, 1>;
+	using PhotonHSV = CustomType_Photon<HSV, 2>;
 
 	// 座標関連
-	using PhotonPoint = SivCustomType<Point, 3>;
-	using PhotonVec2 = SivCustomType<Vec2, 4>;
-	using PhotonVec3 = SivCustomType<Vec3, 5>;
-	using PhotonVec4 = SivCustomType<Vec4, 6>;
-	using PhotonFloat2 = SivCustomType<Float2, 7>;
-	using PhotonFloat3 = SivCustomType<Float3, 8>;
-	using PhotonFloat4 = SivCustomType<Float4, 9>;
-	using PhotonMat3x2 = SivCustomType<Mat3x2, 10>;
+	using PhotonPoint = CustomType_Photon<Point, 3>;
+	using PhotonVec2 = CustomType_Photon<Vec2, 4>;
+	using PhotonVec3 = CustomType_Photon<Vec3, 5>;
+	using PhotonVec4 = CustomType_Photon<Vec4, 6>;
+	using PhotonFloat2 = CustomType_Photon<Float2, 7>;
+	using PhotonFloat3 = CustomType_Photon<Float3, 8>;
+	using PhotonFloat4 = CustomType_Photon<Float4, 9>;
+	using PhotonMat3x2 = CustomType_Photon<Mat3x2, 10>;
 
 
 	// 図形関連
-	using PhotonRect = SivCustomType<Rect, 11>;
-	using PhotonCircle = SivCustomType<Circle, 12>;
-	using PhotonLine = SivCustomType<Line, 13>;
-	using PhotonTriangle = SivCustomType<Triangle, 14>;
-	using PhotonRectF = SivCustomType<RectF, 15>;
-	using PhotonQuad = SivCustomType<Quad, 16>;
-	using PhotonEllipse = SivCustomType<Ellipse, 17>;
-	using PhotonRoundRect = SivCustomType<RoundRect, 18>;
+	using PhotonRect = CustomType_Photon<Rect, 11>;
+	using PhotonCircle = CustomType_Photon<Circle, 12>;
+	using PhotonLine = CustomType_Photon<Line, 13>;
+	using PhotonTriangle = CustomType_Photon<Triangle, 14>;
+	using PhotonRectF = CustomType_Photon<RectF, 15>;
+	using PhotonQuad = CustomType_Photon<Quad, 16>;
+	using PhotonEllipse = CustomType_Photon<Ellipse, 17>;
+	using PhotonRoundRect = CustomType_Photon<RoundRect, 18>;
 
 	// Byte型
-	using PhotonByte = SivCustomType<Byte, 19>;
+	using PhotonByte = CustomType_Photon<Byte, 19>;
 }
 
 namespace s3d
 {
-	class SivPhoton::SivPhotonDetail : public ExitGames::LoadBalancing::Listener
+	class Multiplayer_Photon::PhotonDetail : public ExitGames::LoadBalancing::Listener
 	{
 	public:
 
-		explicit SivPhotonDetail(SivPhoton& context)
+		explicit PhotonDetail(Multiplayer_Photon& context)
 			: m_context{ context }
 		{
 			m_receiveEventFunctions.emplace(uint8{ 0 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object& data) { receivedCustomType<ColorF, 0>(playerID, eventCode, data); });
@@ -373,7 +373,7 @@ namespace s3d
 
 	private:
 
-		SivPhoton& m_context;
+		Multiplayer_Photon& m_context;
 
 		HashTable<uint8, std::function<void(const int, const nByte, const ExitGames::Common::Object&)>> m_receiveEventFunctions;
 
@@ -382,15 +382,15 @@ namespace s3d
 		template <class Type, uint8 N>
 		void receivedCustomType(const int playerID, const nByte eventCode, const ExitGames::Common::Object& eventContent)
 		{
-			auto value = ExitGames::Common::ValueObject<SivCustomType<Type, N>>(eventContent).getDataCopy().getValue();
+			auto value = ExitGames::Common::ValueObject<CustomType_Photon<Type, N>>(eventContent).getDataCopy().getValue();
 			m_context.customEventAction(playerID, eventCode, value);
 		}
 
 		template <class Type, uint8 N>
 		void receivedCustomArrayType(const int playerID, const nByte eventCode, const ExitGames::Common::Object* eventContent)
 		{
-			SivCustomType<Type, N>* values = ExitGames::Common::ValueObject<SivCustomType<Type, N>*>(eventContent).getDataCopy();
-			auto length = *(ExitGames::Common::ValueObject<SivCustomType<Type, N>*>(eventContent)).getSizes();
+			CustomType_Photon<Type, N>* values = ExitGames::Common::ValueObject<CustomType_Photon<Type, N>*>(eventContent).getDataCopy();
+			auto length = *(ExitGames::Common::ValueObject<CustomType_Photon<Type, N>*>(eventContent)).getSizes();
 
 			Array<Type> data(length);
 			for (size_t i = 0; i < length; ++i)
@@ -403,8 +403,8 @@ namespace s3d
 		template <class Type, uint8 N>
 		void receivedCustomArrayByte(const int playerID, const nByte eventCode, const ExitGames::Common::Object* eventContent)
 		{
-			SivCustomType<Type, N>* values = ExitGames::Common::ValueObject<SivCustomType<Type, N>*>(eventContent).getDataCopy();
-			auto length = *(ExitGames::Common::ValueObject<SivCustomType<Type, N>*>(eventContent)).getSizes();
+			CustomType_Photon<Type, N>* values = ExitGames::Common::ValueObject<CustomType_Photon<Type, N>*>(eventContent).getDataCopy();
+			auto length = *(ExitGames::Common::ValueObject<CustomType_Photon<Type, N>*>(eventContent)).getSizes();
 
 			Array<Type> data(length);
 			for (size_t i = 0; i < length; ++i)
@@ -420,8 +420,8 @@ namespace s3d
 
 namespace s3d
 {
-	SivPhoton::SivPhoton(const StringView secretPhotonAppID, const StringView photonAppVersion, const bool verbose)
-		: m_listener{ std::make_unique<SivPhotonDetail>(*this) }
+	Multiplayer_Photon::Multiplayer_Photon(const StringView secretPhotonAppID, const StringView photonAppVersion, const bool verbose)
+		: m_listener{ std::make_unique<PhotonDetail>(*this) }
 		, m_client{ std::make_unique<ExitGames::LoadBalancing::Client>(*m_listener, detail::ToJString(secretPhotonAppID), detail::ToJString(photonAppVersion)) }
 		, m_verbose{ verbose }
 		, m_isUsePhoton{ false }
@@ -449,7 +449,7 @@ namespace s3d
 		PhotonByte::registerType();
 	}
 
-	SivPhoton::~SivPhoton()
+	Multiplayer_Photon::~Multiplayer_Photon()
 	{
 		PhotonColorF::unregisterType();
 		PhotonColor::unregisterType();
@@ -475,9 +475,9 @@ namespace s3d
 		disconnect();
 	}
 
-	void SivPhoton::init(const StringView secretPhotonAppID, const StringView photonAppVersion, const bool verbose)
+	void Multiplayer_Photon::init(const StringView secretPhotonAppID, const StringView photonAppVersion, const bool verbose)
 	{
-		m_listener = std::make_unique<SivPhotonDetail>(*this);
+		m_listener = std::make_unique<PhotonDetail>(*this);
 		m_client = std::make_unique<ExitGames::LoadBalancing::Client>(*m_listener, detail::ToJString(secretPhotonAppID), detail::ToJString(photonAppVersion));
 		m_verbose = verbose;
 		m_isUsePhoton = false;
@@ -505,7 +505,7 @@ namespace s3d
 		PhotonByte::registerType();
 	}
 
-	void SivPhoton::connect(const StringView userName, const Optional<String>& defaultRoomName)
+	void Multiplayer_Photon::connect(const StringView userName, const Optional<String>& defaultRoomName)
 	{
 		m_defaultRoomName = defaultRoomName.value_or(String{ userName });
 
@@ -517,7 +517,7 @@ namespace s3d
 		{
 			if (m_verbose)
 			{
-				Print << U"[SivPhoton] ExitGmae::LoadBalancing::Client::connect() failed.";
+				Print << U"[Multiplayer_Photon] ExitGmae::LoadBalancing::Client::connect() failed.";
 			}
 			return;
 		}
@@ -526,17 +526,17 @@ namespace s3d
 		m_isUsePhoton = true;
 	}
 
-	void SivPhoton::disconnect()
+	void Multiplayer_Photon::disconnect()
 	{
 		m_client->disconnect();
 	}
 
-	void SivPhoton::update()
+	void Multiplayer_Photon::update()
 	{
 		m_client->service();
 	}
 
-	void SivPhoton::opJoinRandomRoom(const int32 maxPlayers)
+	void Multiplayer_Photon::opJoinRandomRoom(const int32 maxPlayers)
 	{
 		if (not InRange(maxPlayers, 0, 255))
 		{
@@ -546,14 +546,14 @@ namespace s3d
 		m_client->opJoinRandomRoom({}, static_cast<uint8>(Clamp(maxPlayers, 1, 255)));
 	}
 
-	void SivPhoton::opJoinRoom(const StringView roomName, const bool rejoin)
+	void Multiplayer_Photon::opJoinRoom(const StringView roomName, const bool rejoin)
 	{
 		const auto roomNameJ = detail::ToJString(roomName);
 
 		m_client->opJoinRoom(roomNameJ, rejoin);
 	}
 
-	void SivPhoton::opCreateRoom(const StringView roomName, const int32 maxPlayers)
+	void Multiplayer_Photon::opCreateRoom(const StringView roomName, const int32 maxPlayers)
 	{
 		if (not InRange(maxPlayers, 0, 255))
 		{
@@ -567,7 +567,7 @@ namespace s3d
 		m_client->opCreateRoom(roomNameJ, roomOption);
 	}
 
-	void SivPhoton::opLeaveRoom()
+	void Multiplayer_Photon::opLeaveRoom()
 	{
 		constexpr bool willComeBack = false;
 
@@ -577,121 +577,121 @@ namespace s3d
 
 namespace s3d
 {
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const ColorF& value)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const ColorF& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonColorF{ value }, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Color& value)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Color& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonColor{ value }, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const HSV& value)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const HSV& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonHSV{ value }, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Point& value)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Point& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonPoint{ value }, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Vec2& value)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Vec2& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonVec2{ value }, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Vec3& value)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Vec3& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonVec3{ value }, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Vec4& value)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Vec4& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonVec4{ value }, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Float2& value)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Float2& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonFloat2{ value }, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Float3& value)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Float3& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonFloat3{ value }, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Float4& value)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Float4& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonFloat4{ value }, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Mat3x2& value)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Mat3x2& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonMat3x2{ value }, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Rect& value)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Rect& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonRect{ value }, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Circle& value)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Circle& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonCircle{ value }, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Line& value)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Line& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonLine{ value }, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Triangle& value)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Triangle& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonTriangle{ value }, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const RectF& value)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const RectF& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonRectF{ value }, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Quad& value)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Quad& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonQuad{ value }, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Ellipse& value)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Ellipse& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonEllipse{ value }, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const RoundRect& value)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const RoundRect& value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, PhotonRoundRect{ value }, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<ColorF>& values)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<ColorF>& values)
 	{
 		constexpr bool reliable = true;
 
@@ -710,7 +710,7 @@ namespace s3d
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Color>& values)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<Color>& values)
 	{
 		constexpr bool reliable = true;
 
@@ -729,7 +729,7 @@ namespace s3d
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<HSV>& values)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<HSV>& values)
 	{
 		constexpr bool reliable = true;
 
@@ -748,7 +748,7 @@ namespace s3d
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Point>& values)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<Point>& values)
 	{
 		constexpr bool reliable = true;
 
@@ -767,7 +767,7 @@ namespace s3d
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Vec2>& values)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<Vec2>& values)
 	{
 		constexpr bool reliable = true;
 
@@ -786,7 +786,7 @@ namespace s3d
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Vec3>& values)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<Vec3>& values)
 	{
 		constexpr bool reliable = true;
 
@@ -805,7 +805,7 @@ namespace s3d
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Vec4>& values)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<Vec4>& values)
 	{
 		constexpr bool reliable = true;
 
@@ -824,7 +824,7 @@ namespace s3d
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Float2>& values)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<Float2>& values)
 	{
 		constexpr bool reliable = true;
 
@@ -843,7 +843,7 @@ namespace s3d
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Float3>& values)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<Float3>& values)
 	{
 		constexpr bool reliable = true;
 
@@ -862,7 +862,7 @@ namespace s3d
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<Float4>& values)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<Float4>& values)
 	{
 		constexpr bool reliable = true;
 
@@ -881,7 +881,7 @@ namespace s3d
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, Serializer<MemoryWriter>& writer)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, Serializer<MemoryWriter>& writer)
 	{
 		constexpr bool reliable = true;
 
@@ -898,37 +898,37 @@ namespace s3d
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const int32 value)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const int32 value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, value, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const double value)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const double value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, value, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const float value)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const float value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, value, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const bool value)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const bool value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, value, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const StringView value)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const StringView value)
 	{
 		constexpr bool reliable = true;
 		m_client->opRaiseEvent(reliable, detail::ToJString(value), eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<int32>& values)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<int32>& values)
 	{
 		constexpr bool reliable = true;
 
@@ -939,7 +939,7 @@ namespace s3d
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<double>& values)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<double>& values)
 	{
 		constexpr bool reliable = true;
 
@@ -950,7 +950,7 @@ namespace s3d
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<float>& values)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<float>& values)
 	{
 		constexpr bool reliable = true;
 
@@ -961,7 +961,7 @@ namespace s3d
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<bool>& values)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<bool>& values)
 	{
 		constexpr bool reliable = true;
 
@@ -972,7 +972,7 @@ namespace s3d
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	void SivPhoton::opRaiseEvent(const uint8 eventCode, const Array<String>& values)
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<String>& values)
 	{
 		constexpr bool reliable = true;
 
@@ -989,17 +989,17 @@ namespace s3d
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	String SivPhoton::getUserName() const
+	String Multiplayer_Photon::getUserName() const
 	{
 		return detail::ToString(m_client->getLocalPlayer().getName());
 	}
 
-	String SivPhoton::getUserID() const
+	String Multiplayer_Photon::getUserID() const
 	{
 		return detail::ToString(m_client->getLocalPlayer().getUserID());
 	}
 
-	Array<String> SivPhoton::getRoomNameList() const
+	Array<String> Multiplayer_Photon::getRoomNameList() const
 	{
 		const auto roomNameList = m_client->getRoomNameList();
 		Array<String> result;
@@ -1012,12 +1012,12 @@ namespace s3d
 		return result;
 	}
 
-	bool SivPhoton::isInRoom() const
+	bool Multiplayer_Photon::isInRoom() const
 	{
 		return m_client->getIsInGameRoom();
 	}
 
-	String SivPhoton::getCurrentRoomName() const
+	String Multiplayer_Photon::getCurrentRoomName() const
 	{
 		if (not m_client->getIsInGameRoom())
 		{
@@ -1027,7 +1027,7 @@ namespace s3d
 		return detail::ToString(m_client->getCurrentlyJoinedRoom().getName());
 	}
 
-	int32 SivPhoton::getPlayerCountInCurrentRoom() const
+	int32 Multiplayer_Photon::getPlayerCountInCurrentRoom() const
 	{
 		if (not m_client->getIsInGameRoom())
 		{
@@ -1037,7 +1037,7 @@ namespace s3d
 		return m_client->getCurrentlyJoinedRoom().getPlayerCount();
 	}
 
-	int32 SivPhoton::getMaxPlayersInCurrentRoom() const
+	int32 Multiplayer_Photon::getMaxPlayersInCurrentRoom() const
 	{
 		if (not m_client->getIsInGameRoom())
 		{
@@ -1047,42 +1047,42 @@ namespace s3d
 		return m_client->getCurrentlyJoinedRoom().getMaxPlayers();
 	}
 
-	bool SivPhoton::getIsOpenInCurrentRoom() const
+	bool Multiplayer_Photon::getIsOpenInCurrentRoom() const
 	{
 		return m_client->getCurrentlyJoinedRoom().getIsOpen();
 	}
 
-	bool SivPhoton::getIsVisibleInCurrentRoom() const
+	bool Multiplayer_Photon::getIsVisibleInCurrentRoom() const
 	{
 		return m_client->getCurrentlyJoinedRoom().getIsVisible();
 	}
 
-	void SivPhoton::setIsOpenInCurrentRoom(const bool isOpen)
+	void Multiplayer_Photon::setIsOpenInCurrentRoom(const bool isOpen)
 	{
 		m_client->getCurrentlyJoinedRoom().setIsOpen(isOpen);
 	}
 
-	void SivPhoton::setIsVisibleInCurrentRoom(const bool isVisible)
+	void Multiplayer_Photon::setIsVisibleInCurrentRoom(const bool isVisible)
 	{
 		m_client->getCurrentlyJoinedRoom().setIsVisible(isVisible);
 	}
 
-	int32 SivPhoton::getCountGamesRunning() const
+	int32 Multiplayer_Photon::getCountGamesRunning() const
 	{
 		return m_client->getCountGamesRunning();
 	}
 
-	int32 SivPhoton::getCountPlayersIngame() const
+	int32 Multiplayer_Photon::getCountPlayersIngame() const
 	{
 		return m_client->getCountPlayersIngame();
 	}
 
-	int32 SivPhoton::getCountPlayersOnline() const
+	int32 Multiplayer_Photon::getCountPlayersOnline() const
 	{
 		return m_client->getCountPlayersOnline();
 	}
 
-	Optional<int32> SivPhoton::localPlayerID() const
+	Optional<int32> Multiplayer_Photon::localPlayerID() const
 	{
 		const int32 localPlayerID = m_client->getLocalPlayer().getNumber();
 
@@ -1094,320 +1094,320 @@ namespace s3d
 		return localPlayerID;
 	}
 
-	bool SivPhoton::isMasterClient() const
+	bool Multiplayer_Photon::isMasterClient() const
 	{
 		return m_client->getLocalPlayer().getIsMasterClient();
 	}
 
-	bool SivPhoton::isUsePhoton() const noexcept
+	bool Multiplayer_Photon::isUsePhoton() const noexcept
 	{
 		return m_isUsePhoton;
 	}
 
-	void SivPhoton::connectionErrorReturn(const int32 errorCode)
+	void Multiplayer_Photon::connectionErrorReturn(const int32 errorCode)
 	{
 		if (m_verbose)
 		{
-			Print << U"[SivPhoton] SivPhoton::connectionErrorReturn() [サーバへの接続が失敗したときに呼ばれる]";
-			Print << U"- [SivPhoton] errorCode: " << errorCode;
+			Print << U"[Multiplayer_Photon] Multiplayer_Photon::connectionErrorReturn() [サーバへの接続が失敗したときに呼ばれる]";
+			Print << U"- [Multiplayer_Photon] errorCode: " << errorCode;
 		}
 	}
 
-	void SivPhoton::connectReturn([[maybe_unused]] const int32 errorCode, const String& errorString, const String& region, const String& cluster)
+	void Multiplayer_Photon::connectReturn([[maybe_unused]] const int32 errorCode, const String& errorString, const String& region, const String& cluster)
 	{
 		if (m_verbose)
 		{
-			Print << U"[SivPhoton] SivPhoton::connectReturn()";
-			Print << U"- [SivPhoton] error: " << errorString;
-			Print << U"- [SivPhoton] region: " << region;
-			Print << U"- [SivPhoton] cluster: " << cluster;
+			Print << U"[Multiplayer_Photon] Multiplayer_Photon::connectReturn()";
+			Print << U"- [Multiplayer_Photon] error: " << errorString;
+			Print << U"- [Multiplayer_Photon] region: " << region;
+			Print << U"- [Multiplayer_Photon] cluster: " << cluster;
 		}
 	}
 
-	void SivPhoton::disconnectReturn()
+	void Multiplayer_Photon::disconnectReturn()
 	{
 		if (m_verbose)
 		{
-			Print << U"[SivPhoton] SivPhoton::disconnectReturn() [サーバから切断されたときに呼ばれる]";
+			Print << U"[Multiplayer_Photon] Multiplayer_Photon::disconnectReturn() [サーバから切断されたときに呼ばれる]";
 		}
 	}
 
-	void SivPhoton::leaveRoomReturn(const int32 errorCode, const String& errorString)
+	void Multiplayer_Photon::leaveRoomReturn(const int32 errorCode, const String& errorString)
 	{
 		if (m_verbose)
 		{
-			Print << U"[SivPhoton] SivPhoton::leaveRoomReturn() [ルームから退室した結果を処理する]";
-			Print << U"- [SivPhoton] errorCode:" << errorCode;
-			Print << U"- [SivPhoton] errorString:" << errorString;
+			Print << U"[Multiplayer_Photon] Multiplayer_Photon::leaveRoomReturn() [ルームから退室した結果を処理する]";
+			Print << U"- [Multiplayer_Photon] errorCode:" << errorCode;
+			Print << U"- [Multiplayer_Photon] errorString:" << errorString;
 		}
 	}
 
-	void SivPhoton::joinRandomRoomReturn(const int32 localPlayerID, const int32 errorCode, const String& errorString)
+	void Multiplayer_Photon::joinRandomRoomReturn(const int32 localPlayerID, const int32 errorCode, const String& errorString)
 	{
 		if (m_verbose)
 		{
-			Print << U"[SivPhoton] SivPhoton::joinRandomRoomReturn()";
-			Print << U"- [SivPhoton] localPlayerID:" << localPlayerID;
-			Print << U"- [SivPhoton] errorCode:" << errorCode;
-			Print << U"- [SivPhoton] errorString:" << errorString;
+			Print << U"[Multiplayer_Photon] Multiplayer_Photon::joinRandomRoomReturn()";
+			Print << U"- [Multiplayer_Photon] localPlayerID:" << localPlayerID;
+			Print << U"- [Multiplayer_Photon] errorCode:" << errorCode;
+			Print << U"- [Multiplayer_Photon] errorString:" << errorString;
 		}
 	}
 
-	void SivPhoton::joinRoomReturn(const int32 localPlayerID, const int32 errorCode, const String& errorString)
+	void Multiplayer_Photon::joinRoomReturn(const int32 localPlayerID, const int32 errorCode, const String& errorString)
 	{
 		if (m_verbose)
 		{
-			Print << U"[SivPhoton] SivPhoton::joinRoomReturn()";
-			Print << U"- [SivPhoton] localPlayerID:" << localPlayerID;
-			Print << U"- [SivPhoton] errorCode:" << errorCode;
-			Print << U"- [SivPhoton] errorString:" << errorString;
+			Print << U"[Multiplayer_Photon] Multiplayer_Photon::joinRoomReturn()";
+			Print << U"- [Multiplayer_Photon] localPlayerID:" << localPlayerID;
+			Print << U"- [Multiplayer_Photon] errorCode:" << errorCode;
+			Print << U"- [Multiplayer_Photon] errorString:" << errorString;
 		}
 	}
 
-	void SivPhoton::joinRoomEventAction(const int32 localPlayerID, const Array<int32>& playerIDs, const bool isSelf)
+	void Multiplayer_Photon::joinRoomEventAction(const int32 localPlayerID, const Array<int32>& playerIDs, const bool isSelf)
 	{
 		if (m_verbose)
 		{
-			Print << U"[SivPhoton] SivPhoton::joinRoomEventAction() [自分を含め、プレイヤーが参加したら呼ばれる]";
-			Print << U"- [SivPhoton] localPlayerID [参加した人の ID]:" << localPlayerID;
-			Print << U"- [SivPhoton] playerIDs: [ルームの参加者一覧]" << playerIDs;
-			Print << U"- [SivPhoton] isSelf [自分自身の参加？]:" << isSelf;
+			Print << U"[Multiplayer_Photon] Multiplayer_Photon::joinRoomEventAction() [自分を含め、プレイヤーが参加したら呼ばれる]";
+			Print << U"- [Multiplayer_Photon] localPlayerID [参加した人の ID]:" << localPlayerID;
+			Print << U"- [Multiplayer_Photon] playerIDs: [ルームの参加者一覧]" << playerIDs;
+			Print << U"- [Multiplayer_Photon] isSelf [自分自身の参加？]:" << isSelf;
 		}
 	}
 
-	void SivPhoton::leaveRoomEventAction(const int32 playerID, const bool isInactive)
+	void Multiplayer_Photon::leaveRoomEventAction(const int32 playerID, const bool isInactive)
 	{
 		if (m_verbose)
 		{
-			Print << U"[SivPhoton] SivPhoton::leaveRoomEventAction()";
-			Print << U"- [SivPhoton] playerID: " << playerID;
-			Print << U"- [SivPhoton] isInactive: " << isInactive;
+			Print << U"[Multiplayer_Photon] Multiplayer_Photon::leaveRoomEventAction()";
+			Print << U"- [Multiplayer_Photon] playerID: " << playerID;
+			Print << U"- [Multiplayer_Photon] isInactive: " << isInactive;
 
 			if (m_client->getLocalPlayer().getIsMasterClient())
 			{
-				Print << U"[SivPhoton] I am now the master client";
+				Print << U"[Multiplayer_Photon] I am now the master client";
 			}
 			else
 			{
-				Print << U"[SivPhoton] I am still not the master client";
+				Print << U"[Multiplayer_Photon] I am still not the master client";
 			}
 		}
 	}
 
-	void SivPhoton::createRoomReturn(const int32 localPlayerID, const int32 errorCode, const String& errorString)
+	void Multiplayer_Photon::createRoomReturn(const int32 localPlayerID, const int32 errorCode, const String& errorString)
 	{
 		if (m_verbose)
 		{
-			Print << U"[SivPhoton] SivPhoton::createRoomReturn() [ルームを新規作成した結果を処理する]";
-			Print << U"- [SivPhoton] localPlayerID:" << localPlayerID;
-			Print << U"- [SivPhoton] errorCode:" << errorCode;
-			Print << U"- [SivPhoton] errorString:" << errorString;
+			Print << U"[Multiplayer_Photon] Multiplayer_Photon::createRoomReturn() [ルームを新規作成した結果を処理する]";
+			Print << U"- [Multiplayer_Photon] localPlayerID:" << localPlayerID;
+			Print << U"- [Multiplayer_Photon] errorCode:" << errorCode;
+			Print << U"- [Multiplayer_Photon] errorString:" << errorString;
 		}
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const int32 data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const int32 data)
 	{
 		PrintCustomEventAction(U"int32", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const double data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const double data)
 	{
 		PrintCustomEventAction(U"double", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const float data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const float data)
 	{
 		PrintCustomEventAction(U"float", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const bool data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const bool data)
 	{
 		PrintCustomEventAction(U"bool", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const String& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const String& data)
 	{
 		PrintCustomEventAction(U"String", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<int32>& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Array<int32>& data)
 	{
 		PrintCustomEventAction(U"Array<int32>", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<double>& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Array<double>& data)
 	{
 		PrintCustomEventAction(U"Array<double>", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<float>& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Array<float>& data)
 	{
 		PrintCustomEventAction(U"Array<float>", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<bool>& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Array<bool>& data)
 	{
 		PrintCustomEventAction(U"Array<bool>", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<String>& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Array<String>& data)
 	{
 		PrintCustomEventAction(U"Array<String>", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const ColorF& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const ColorF& data)
 	{
 		PrintCustomEventAction(U"ColorF", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Color& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Color& data)
 	{
 		PrintCustomEventAction(U"Color", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const HSV& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const HSV& data)
 	{
 		PrintCustomEventAction(U"HSV", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Point& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Point& data)
 	{
 		PrintCustomEventAction(U"Point", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Vec2& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Vec2& data)
 	{
 		PrintCustomEventAction(U"Vec2", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Vec3& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Vec3& data)
 	{
 		PrintCustomEventAction(U"Vec3", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Vec4& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Vec4& data)
 	{
 		PrintCustomEventAction(U"Vec4", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Float2& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Float2& data)
 	{
 		PrintCustomEventAction(U"Float2", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Float3& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Float3& data)
 	{
 		PrintCustomEventAction(U"Float3", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Float4& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Float4& data)
 	{
 		PrintCustomEventAction(U"Float4", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Mat3x2& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Mat3x2& data)
 	{
 		PrintCustomEventAction(U"Mat3x2", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Rect& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Rect& data)
 	{
 		PrintCustomEventAction(U"Rect", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Circle& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Circle& data)
 	{
 		PrintCustomEventAction(U"Circle", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Line& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Line& data)
 	{
 		PrintCustomEventAction(U"Line", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Triangle& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Triangle& data)
 	{
 		PrintCustomEventAction(U"Triangle", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const RectF& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const RectF& data)
 	{
 		PrintCustomEventAction(U"RectF", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Quad& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Quad& data)
 	{
 		PrintCustomEventAction(U"Quad", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Ellipse& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Ellipse& data)
 	{
 		PrintCustomEventAction(U"Ellipse", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const RoundRect& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const RoundRect& data)
 	{
 		PrintCustomEventAction(U"RoundRect", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<ColorF>& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Array<ColorF>& data)
 	{
 		PrintCustomEventAction(U"Array<ColorF>", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<Color>& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Array<Color>& data)
 	{
 		PrintCustomEventAction(U"Array<Color>", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<HSV>& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Array<HSV>& data)
 	{
 		PrintCustomEventAction(U"Array<HSV>", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<Point>& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Array<Point>& data)
 	{
 		PrintCustomEventAction(U"Array<Point>", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<Vec2>& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Array<Vec2>& data)
 	{
 		PrintCustomEventAction(U"Array<Vec2>", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<Vec3>& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Array<Vec3>& data)
 	{
 		PrintCustomEventAction(U"Array<Vec3>", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<Vec4>& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Array<Vec4>& data)
 	{
 		PrintCustomEventAction(U"Array<Vec4>", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<Float2>& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Array<Float2>& data)
 	{
 		PrintCustomEventAction(U"Array<Float2>", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<Float3>& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Array<Float3>& data)
 	{
 		PrintCustomEventAction(U"Array<Float3>", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(const int32 playerID, const int32 eventCode, const Array<Float4>& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Array<Float4>& data)
 	{
 		PrintCustomEventAction(U"Array<Float4>", playerID, eventCode, data);
 	}
 
-	void SivPhoton::customEventAction(int32 playerID, int32 eventCode, [[maybe_unused]] Deserializer<MemoryReader>& reader)
+	void Multiplayer_Photon::customEventAction(int32 playerID, int32 eventCode, [[maybe_unused]] Deserializer<MemoryReader>& reader)
 	{
-		Print << U"[SivPhoton] SivPhoton::customEventAction(Deserializer<MemoryReader>)";
-		Print << U"[SivPhoton] playerID: " << playerID;
-		Print << U"[SivPhoton] eventCode: " << eventCode;
+		Print << U"[Multiplayer_Photon] Multiplayer_Photon::customEventAction(Deserializer<MemoryReader>)";
+		Print << U"[Multiplayer_Photon] playerID: " << playerID;
+		Print << U"[Multiplayer_Photon] eventCode: " << eventCode;
 	}
 
-	ExitGames::LoadBalancing::Client& SivPhoton::getClient()
+	ExitGames::LoadBalancing::Client& Multiplayer_Photon::getClient()
 	{
 		assert(m_client);
 

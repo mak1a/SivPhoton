@@ -1,5 +1,5 @@
 ﻿# include <Siv3D.hpp> // OpenSiv3D v0.6.3
-# include "NetworkSystem.hpp"
+# include "Multiplayer_Photon.hpp"
 # include "ENCRYPTED_PHOTON_APP_ID.SECRET"
 
 struct Data
@@ -15,11 +15,11 @@ struct Data
 	}
 };
 
-class MyNetwork : public SivPhoton
+class MyNetwork : public Multiplayer_Photon
 {
 public:
 
-	using SivPhoton::SivPhoton;
+	using Multiplayer_Photon::Multiplayer_Photon;
 
 	void connectReturn(const int32 errorCode, const String& errorString, const String& region, const String& cluster) override
 	{
