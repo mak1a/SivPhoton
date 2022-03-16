@@ -594,6 +594,97 @@ namespace s3d
 
 namespace s3d
 {
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const bool value)
+	{
+		constexpr bool reliable = true;
+		m_client->opRaiseEvent(reliable, value, eventCode);
+	}
+
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const int32 value)
+	{
+		constexpr bool reliable = true;
+		m_client->opRaiseEvent(reliable, value, eventCode);
+	}
+
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const float value)
+	{
+		constexpr bool reliable = true;
+		m_client->opRaiseEvent(reliable, value, eventCode);
+	}
+
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const double value)
+	{
+		constexpr bool reliable = true;
+		m_client->opRaiseEvent(reliable, value, eventCode);
+	}
+
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const StringView value)
+	{
+		constexpr bool reliable = true;
+		m_client->opRaiseEvent(reliable, detail::ToJString(value), eventCode);
+	}
+
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<bool>& values)
+	{
+		constexpr bool reliable = true;
+
+		ExitGames::Common::Hashtable ev;
+		ev.put(L"ArrayType", L"Array");
+		ev.put(L"values", values.data(), static_cast<int16>(values.size()));
+
+		m_client->opRaiseEvent(reliable, ev, eventCode);
+	}
+
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<int32>& values)
+	{
+		constexpr bool reliable = true;
+
+		ExitGames::Common::Hashtable ev;
+		ev.put(L"ArrayType", L"Array");
+		ev.put(L"values", values.data(), static_cast<int16>(values.size()));
+
+		m_client->opRaiseEvent(reliable, ev, eventCode);
+	}
+
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<float>& values)
+	{
+		constexpr bool reliable = true;
+
+		ExitGames::Common::Hashtable ev;
+		ev.put(L"ArrayType", L"Array");
+		ev.put(L"values", values.data(), static_cast<int16>(values.size()));
+
+		m_client->opRaiseEvent(reliable, ev, eventCode);
+	}
+
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<double>& values)
+	{
+		constexpr bool reliable = true;
+
+		ExitGames::Common::Hashtable ev;
+		ev.put(L"ArrayType", L"Array");
+		ev.put(L"values", values.data(), static_cast<int16>(values.size()));
+
+		m_client->opRaiseEvent(reliable, ev, eventCode);
+	}
+
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<String>& values)
+	{
+		constexpr bool reliable = true;
+
+		Array<ExitGames::Common::JString> data;
+		for (const auto& v : values)
+		{
+			data << detail::ToJString(v);
+		}
+
+		ExitGames::Common::Hashtable ev;
+		ev.put(L"ArrayType", L"Array");
+		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
+
+		m_client->opRaiseEvent(reliable, ev, eventCode);
+	}
+
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Color& value)
 	{
 		constexpr bool reliable = true;
@@ -915,97 +1006,6 @@ namespace s3d
 		m_client->opRaiseEvent(reliable, ev, eventCode);
 	}
 
-	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const int32 value)
-	{
-		constexpr bool reliable = true;
-		m_client->opRaiseEvent(reliable, value, eventCode);
-	}
-
-	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const double value)
-	{
-		constexpr bool reliable = true;
-		m_client->opRaiseEvent(reliable, value, eventCode);
-	}
-
-	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const float value)
-	{
-		constexpr bool reliable = true;
-		m_client->opRaiseEvent(reliable, value, eventCode);
-	}
-
-	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const bool value)
-	{
-		constexpr bool reliable = true;
-		m_client->opRaiseEvent(reliable, value, eventCode);
-	}
-
-	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const StringView value)
-	{
-		constexpr bool reliable = true;
-		m_client->opRaiseEvent(reliable, detail::ToJString(value), eventCode);
-	}
-
-	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<int32>& values)
-	{
-		constexpr bool reliable = true;
-
-		ExitGames::Common::Hashtable ev;
-		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", values.data(), static_cast<int16>(values.size()));
-
-		m_client->opRaiseEvent(reliable, ev, eventCode);
-	}
-
-	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<double>& values)
-	{
-		constexpr bool reliable = true;
-
-		ExitGames::Common::Hashtable ev;
-		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", values.data(), static_cast<int16>(values.size()));
-
-		m_client->opRaiseEvent(reliable, ev, eventCode);
-	}
-
-	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<float>& values)
-	{
-		constexpr bool reliable = true;
-
-		ExitGames::Common::Hashtable ev;
-		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", values.data(), static_cast<int16>(values.size()));
-
-		m_client->opRaiseEvent(reliable, ev, eventCode);
-	}
-
-	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<bool>& values)
-	{
-		constexpr bool reliable = true;
-
-		ExitGames::Common::Hashtable ev;
-		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", values.data(), static_cast<int16>(values.size()));
-
-		m_client->opRaiseEvent(reliable, ev, eventCode);
-	}
-
-	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<String>& values)
-	{
-		constexpr bool reliable = true;
-
-		Array<ExitGames::Common::JString> data;
-		for (const auto& v : values)
-		{
-			data << detail::ToJString(v);
-		}
-
-		ExitGames::Common::Hashtable ev;
-		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
-
-		m_client->opRaiseEvent(reliable, ev, eventCode);
-	}
-
 	String Multiplayer_Photon::getUserName() const
 	{
 		return detail::ToString(m_client->getLocalPlayer().getName());
@@ -1222,14 +1222,14 @@ namespace s3d
 		}
 	}
 
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const bool data)
+	{
+		PrintCustomEventAction(U"bool", playerID, eventCode, data);
+	}
+
 	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const int32 data)
 	{
 		PrintCustomEventAction(U"int32", playerID, eventCode, data);
-	}
-
-	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const double data)
-	{
-		PrintCustomEventAction(U"double", playerID, eventCode, data);
 	}
 
 	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const float data)
@@ -1237,9 +1237,9 @@ namespace s3d
 		PrintCustomEventAction(U"float", playerID, eventCode, data);
 	}
 
-	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const bool data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const double data)
 	{
-		PrintCustomEventAction(U"bool", playerID, eventCode, data);
+		PrintCustomEventAction(U"double", playerID, eventCode, data);
 	}
 
 	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const String& data)
@@ -1247,14 +1247,14 @@ namespace s3d
 		PrintCustomEventAction(U"String", playerID, eventCode, data);
 	}
 
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Array<bool>& data)
+	{
+		PrintCustomEventAction(U"Array<bool>", playerID, eventCode, data);
+	}
+
 	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Array<int32>& data)
 	{
 		PrintCustomEventAction(U"Array<int32>", playerID, eventCode, data);
-	}
-
-	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Array<double>& data)
-	{
-		PrintCustomEventAction(U"Array<double>", playerID, eventCode, data);
 	}
 
 	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Array<float>& data)
@@ -1262,9 +1262,9 @@ namespace s3d
 		PrintCustomEventAction(U"Array<float>", playerID, eventCode, data);
 	}
 
-	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Array<bool>& data)
+	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Array<double>& data)
 	{
-		PrintCustomEventAction(U"Array<bool>", playerID, eventCode, data);
+		PrintCustomEventAction(U"Array<double>", playerID, eventCode, data);
 	}
 
 	void Multiplayer_Photon::customEventAction(const int32 playerID, const int32 eventCode, const Array<String>& data)

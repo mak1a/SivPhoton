@@ -102,6 +102,56 @@ namespace s3d
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
+		void opRaiseEvent(uint8 eventCode, bool value);
+
+		/// @brief データの送信を行います。
+		/// @param eventCode イベントコード
+		/// @param value 送信するデータ
+		void opRaiseEvent(uint8 eventCode, int32 value);
+
+		/// @brief データの送信を行います。
+		/// @param eventCode イベントコード
+		/// @param value 送信するデータ
+		void opRaiseEvent(uint8 eventCode, float value);
+
+		/// @brief データの送信を行います。
+		/// @param eventCode イベントコード
+		/// @param value 送信するデータ
+		void opRaiseEvent(uint8 eventCode, double value);
+
+		/// @brief データの送信を行います。
+		/// @param eventCode イベントコード
+		/// @param value 送信するデータ
+		void opRaiseEvent(uint8 eventCode, StringView value);
+
+		/// @brief データの送信を行います。
+		/// @param eventCode イベントコード
+		/// @param value 送信するデータ
+		void opRaiseEvent(uint8 eventCode, const Array<bool>& value);
+
+		/// @brief データの送信を行います。
+		/// @param eventCode イベントコード
+		/// @param value 送信するデータ
+		void opRaiseEvent(uint8 eventCode, const Array<int32>& value);
+
+		/// @brief データの送信を行います。
+		/// @param eventCode イベントコード
+		/// @param value 送信するデータ
+		void opRaiseEvent(uint8 eventCode, const Array<float>& value);
+
+		/// @brief データの送信を行います。
+		/// @param eventCode イベントコード
+		/// @param value 送信するデータ
+		void opRaiseEvent(uint8 eventCode, const Array<double>& value);
+
+		/// @brief データの送信を行います。
+		/// @param eventCode イベントコード
+		/// @param value 送信するデータ
+		void opRaiseEvent(uint8 eventCode, const Array<String>& value);
+
+		/// @brief データの送信を行います。
+		/// @param eventCode イベントコード
+		/// @param value 送信するデータ
 		void opRaiseEvent(uint8 eventCode, const Color& value);
 
 		/// @brief データの送信を行います。
@@ -250,56 +300,6 @@ namespace s3d
 		/// @remark 自作クラスを送信する際に利用できます。
 		void opRaiseEvent(uint8 eventCode, Serializer<MemoryWriter>& writer);
 
-		/// @brief データの送信を行います。
-		/// @param eventCode イベントコード
-		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, int32 value);
-
-		/// @brief データの送信を行います。
-		/// @param eventCode イベントコード
-		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, double value);
-
-		/// @brief データの送信を行います。
-		/// @param eventCode イベントコード
-		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, float value);
-
-		/// @brief データの送信を行います。
-		/// @param eventCode イベントコード
-		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, bool value);
-
-		/// @brief データの送信を行います。
-		/// @param eventCode イベントコード
-		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, StringView value);
-
-		/// @brief データの送信を行います。
-		/// @param eventCode イベントコード
-		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Array<int32>& value);
-
-		/// @brief データの送信を行います。
-		/// @param eventCode イベントコード
-		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Array<double>& value);
-
-		/// @brief データの送信を行います。
-		/// @param eventCode イベントコード
-		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Array<float>& value);
-
-		/// @brief データの送信を行います。
-		/// @param eventCode イベントコード
-		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Array<bool>& value);
-
-		/// @brief データの送信を行います。
-		/// @param eventCode イベントコード
-		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Array<String>& value);
-
 		/// @brief サーバに接続したときのユーザ名を返します。
 		/// @return ユーザ名
 		[[nodiscard]]
@@ -436,13 +436,13 @@ namespace s3d
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, int32 data);
+		virtual void customEventAction(int32 playerID, int32 eventCode, bool data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, double data);
+		virtual void customEventAction(int32 playerID, int32 eventCode, int32 data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
@@ -454,7 +454,7 @@ namespace s3d
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, bool data);
+		virtual void customEventAction(int32 playerID, int32 eventCode, double data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
@@ -466,13 +466,13 @@ namespace s3d
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Array<int32>& data);
+		virtual void customEventAction(int32 playerID, int32 eventCode, const Array<bool>& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Array<double>& data);
+		virtual void customEventAction(int32 playerID, int32 eventCode, const Array<int32>& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
@@ -484,7 +484,7 @@ namespace s3d
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Array<bool>& data);
+		virtual void customEventAction(int32 playerID, int32 eventCode, const Array<double>& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
