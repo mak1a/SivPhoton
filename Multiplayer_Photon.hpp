@@ -58,7 +58,7 @@ namespace s3d
 		/// @param verbose trueの時にデバッグ用の文字列を表示します。
 		/// @remark アプリケーションバージョンが異なる Multiplayer_Photon とは通信できません。
 		SIV3D_NODISCARD_CXX20
-		Multiplayer_Photon(StringView secretPhotonAppID, StringView photonAppVersion, bool verbose = true);
+		Multiplayer_Photon(std::string_view secretPhotonAppID, StringView photonAppVersion, bool verbose = true);
 
 		virtual ~Multiplayer_Photon();
 
@@ -674,6 +674,8 @@ namespace s3d
 
 	protected:
 
+		/// @brief デフォルトのルーム名
+		/// @remark connect() 内で初期化を行い、Multiplayer_Photonを継承した先のメンバ変数として使用できます。
 		String m_defaultRoomName;
 
 	private:

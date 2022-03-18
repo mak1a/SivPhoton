@@ -123,7 +123,6 @@ namespace s3d
 	using PhotonFloat4 = CustomType_Photon<Float4, 9>;
 	using PhotonMat3x2 = CustomType_Photon<Mat3x2, 10>;
 
-
 	// 図形関連
 	using PhotonRect = CustomType_Photon<Rect, 11>;
 	using PhotonCircle = CustomType_Photon<Circle, 12>;
@@ -134,8 +133,6 @@ namespace s3d
 	using PhotonEllipse = CustomType_Photon<Ellipse, 17>;
 	using PhotonRoundRect = CustomType_Photon<RoundRect, 18>;
 
-	// Byte型
-	using PhotonByte = CustomType_Photon<Byte, 19>;
 
 	static void RegisterTypes()
 	{
@@ -158,7 +155,6 @@ namespace s3d
 		PhotonQuad::registerType();
 		PhotonEllipse::registerType();
 		PhotonRoundRect::registerType();
-		PhotonByte::registerType();
 	}
 
 	static void UnregisterTypes()
@@ -182,7 +178,6 @@ namespace s3d
 		PhotonQuad::unregisterType();
 		PhotonEllipse::unregisterType();
 		PhotonRoundRect::unregisterType();
-		PhotonByte::unregisterType();
 	}
 }
 
@@ -225,7 +220,6 @@ namespace s3d
 			m_receiveArrayEventFunctions.emplace(uint8{ 7 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<Float2, 7>(playerID, eventCode, data); });
 			m_receiveArrayEventFunctions.emplace(uint8{ 8 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<Float3, 8>(playerID, eventCode, data); });
 			m_receiveArrayEventFunctions.emplace(uint8{ 9 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayType<Float4, 9>(playerID, eventCode, data); });
-			m_receiveArrayEventFunctions.emplace(uint8{ 19 }, [this](const int playerID, const nByte eventCode, const ExitGames::Common::Object* data) { receivedCustomArrayByte<Byte, 19>(playerID, eventCode, data); });
 		}
 
 		void debugReturn([[maybe_unused]] const int debugLevel, [[maybe_unused]] const ExitGames::Common::JString& string) override
@@ -303,6 +297,21 @@ namespace s3d
 
 					switch (type)
 					{
+					case ExitGames::Common::TypeCode::BYTE:
+					{
+						const auto values = ExitGames::Common::ValueObject<BYTE*>(eventDataContent.getValue(L"values")).getDataCopy();
+						const auto length = *(ExitGames::Common::ValueObject<BYTE*>(eventDataContent.getValue(L"values"))).getSizes();
+
+						Array<BYTE> data(length);
+						for (size_t i = 0; i < length; ++i)
+						{
+							data[i] = values[i];
+						}
+
+						Deserializer<MemoryReader> reader{ data.data(), data.size() };
+						m_context.customEventAction(playerID, eventCode, reader);
+						return;
+					}
 					case ExitGames::Common::TypeCode::INTEGER:
 						{
 							const auto values = ExitGames::Common::ValueObject<int*>(eventDataContent.getValue(L"values")).getDataCopy();
@@ -484,9 +493,9 @@ namespace s3d
 
 namespace s3d
 {
-	Multiplayer_Photon::Multiplayer_Photon(const StringView secretPhotonAppID, const StringView photonAppVersion, const bool verbose)
+	Multiplayer_Photon::Multiplayer_Photon(const std::string_view secretPhotonAppID, const StringView photonAppVersion, const bool verbose)
 	{
-		init(secretPhotonAppID, photonAppVersion, verbose);
+		init(Unicode::WidenAscii(secretPhotonAppID), photonAppVersion, verbose);
 	}
 
 	Multiplayer_Photon::~Multiplayer_Photon()
@@ -928,10 +937,10 @@ namespace s3d
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, Serializer<MemoryWriter>& writer)
 	{
-		Array<PhotonByte> data;
+		Array<BYTE> data;
 		for (const auto& arrayByte = writer->getBlob().asArray(); const auto& v : arrayByte)
 		{
-			data << PhotonByte{ v };
+			data.emplace_back(AsUint8(v));
 		}
 
 		ExitGames::Common::Hashtable ev;
