@@ -298,20 +298,14 @@ namespace s3d
 					switch (type)
 					{
 					case ExitGames::Common::TypeCode::BYTE:
-					{
-						const auto values = ExitGames::Common::ValueObject<BYTE*>(eventDataContent.getValue(L"values")).getDataCopy();
-						const auto length = *(ExitGames::Common::ValueObject<BYTE*>(eventDataContent.getValue(L"values"))).getSizes();
-
-						Array<BYTE> data(length);
-						for (size_t i = 0; i < length; ++i)
 						{
-							data[i] = values[i];
-						}
+							const auto values = ExitGames::Common::ValueObject<BYTE*>(eventDataContent.getValue(L"values")).getDataCopy();
+							const auto length = *(ExitGames::Common::ValueObject<BYTE*>(eventDataContent.getValue(L"values"))).getSizes();
 
-						Deserializer<MemoryReader> reader{ data.data(), data.size() };
-						m_context.customEventAction(playerID, eventCode, reader);
-						return;
-					}
+							Deserializer<MemoryReader> reader{ values, length };
+							m_context.customEventAction(playerID, eventCode, reader);
+							return;
+						}
 					case ExitGames::Common::TypeCode::INTEGER:
 						{
 							const auto values = ExitGames::Common::ValueObject<int*>(eventDataContent.getValue(L"values")).getDataCopy();
@@ -594,6 +588,24 @@ namespace s3d
 {
 	constexpr bool Reliable = true;
 
+	template <class Type, class PhotonType>
+	void OpRaiseEventArray(std::unique_ptr<ExitGames::LoadBalancing::Client>& client, const uint8 eventCode, const Array<Type>& values)
+	{
+		Array<PhotonType> data;
+		data.reserve(values.size());
+
+		for (const auto& v : values)
+		{
+			data.emplace_back(v);
+		}
+
+		ExitGames::Common::Hashtable ev;
+		ev.put(L"ArrayType", L"Array");
+		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
+
+		client->opRaiseEvent(Reliable, ev, eventCode);
+	}
+
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const bool value)
 	{
 		m_client->opRaiseEvent(Reliable, value, eventCode);
@@ -767,181 +779,60 @@ namespace s3d
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<Color>& values)
 	{
-		Array<PhotonColor> data;
-		data.reserve(values.size());
-
-		for (const auto& v : values)
-		{
-			data.emplace_back(v);
-		}
-
-		ExitGames::Common::Hashtable ev;
-		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
-
-		m_client->opRaiseEvent(Reliable, ev, eventCode);
+		OpRaiseEventArray<Color, PhotonColor>(m_client, eventCode, values);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<ColorF>& values)
 	{
-		Array<PhotonColorF> data;
-		data.reserve(values.size());
-
-		for (const auto& v : values)
-		{
-			data.emplace_back(v);
-		}
-
-		ExitGames::Common::Hashtable ev;
-		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
-
-		m_client->opRaiseEvent(Reliable, ev, eventCode);
+		OpRaiseEventArray<ColorF, PhotonColorF>(m_client, eventCode, values);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<HSV>& values)
 	{
-		Array<PhotonHSV> data;
-		data.reserve(values.size());
-
-		for (const auto& v : values)
-		{
-			data.emplace_back(v);
-		}
-
-		ExitGames::Common::Hashtable ev;
-		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
-
-		m_client->opRaiseEvent(Reliable, ev, eventCode);
+		OpRaiseEventArray<HSV, PhotonHSV>(m_client, eventCode, values);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<Point>& values)
 	{
-		Array<PhotonPoint> data;
-		data.reserve(values.size());
-
-		for (const auto& v : values)
-		{
-			data.emplace_back(v);
-		}
-
-		ExitGames::Common::Hashtable ev;
-		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
-
-		m_client->opRaiseEvent(Reliable, ev, eventCode);
+		OpRaiseEventArray<Point, PhotonPoint>(m_client, eventCode, values);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<Vec2>& values)
 	{
-		Array<PhotonVec2> data;
-		data.reserve(values.size());
-
-		for (const auto& v : values)
-		{
-			data.emplace_back(v);
-		}
-
-		ExitGames::Common::Hashtable ev;
-		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
-
-		m_client->opRaiseEvent(Reliable, ev, eventCode);
+		OpRaiseEventArray<Vec2, PhotonVec2>(m_client, eventCode, values);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<Vec3>& values)
 	{
-		Array<PhotonVec3> data;
-		data.reserve(values.size());
-
-		for (const auto& v : values)
-		{
-			data.emplace_back(v);
-		}
-
-		ExitGames::Common::Hashtable ev;
-		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
-
-		m_client->opRaiseEvent(Reliable, ev, eventCode);
+		OpRaiseEventArray<Vec3, PhotonVec3>(m_client, eventCode, values);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<Vec4>& values)
 	{
-		Array<PhotonVec4> data;
-		data.reserve(values.size());
-
-		for (const auto& v : values)
-		{
-			data.emplace_back(v);
-		}
-
-		ExitGames::Common::Hashtable ev;
-		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
-
-		m_client->opRaiseEvent(Reliable, ev, eventCode);
+		OpRaiseEventArray<Vec4, PhotonVec4>(m_client, eventCode, values);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<Float2>& values)
 	{
-		Array<PhotonFloat2> data;
-		data.reserve(values.size());
-
-		for (const auto& v : values)
-		{
-			data.emplace_back(v);
-		}
-
-		ExitGames::Common::Hashtable ev;
-		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
-
-		m_client->opRaiseEvent(Reliable, ev, eventCode);
+		OpRaiseEventArray<Float2, PhotonFloat2>(m_client, eventCode, values);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<Float3>& values)
 	{
-		Array<PhotonFloat3> data;
-		data.reserve(values.size());
-
-		for (const auto& v : values)
-		{
-			data.emplace_back(v);
-		}
-
-		ExitGames::Common::Hashtable ev;
-		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
-
-		m_client->opRaiseEvent(Reliable, ev, eventCode);
+		OpRaiseEventArray<Float3, PhotonFloat3>(m_client, eventCode, values);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<Float4>& values)
 	{
-		Array<PhotonFloat4> data;
-		data.reserve(values.size());
-
-		for (const auto& v : values)
-		{
-			data.emplace_back(v);
-		}
-
-		ExitGames::Common::Hashtable ev;
-		ev.put(L"ArrayType", L"Array");
-		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
-
-		m_client->opRaiseEvent(Reliable, ev, eventCode);
+		OpRaiseEventArray<Float4, PhotonFloat4>(m_client, eventCode, values);
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, Serializer<MemoryWriter>& writer)
 	{
-		Array<BYTE> data;
-		for (const auto& arrayByte = writer->getBlob().asArray(); const auto& v : arrayByte)
-		{
-			data.emplace_back(AsUint8(v));
-		}
+		const auto& blob = writer->getBlob();
+		const BYTE* src = static_cast<const BYTE*>(static_cast<const void*>(blob.data()));
+		const size_t size = blob.size();
+		Array<BYTE> data(src, (src + size));
 
 		ExitGames::Common::Hashtable ev;
 		ev.put(L"ArrayType", L"Array");
