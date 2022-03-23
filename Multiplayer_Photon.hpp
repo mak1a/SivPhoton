@@ -12,7 +12,7 @@
 //-----------------------------------------------
 //	Author (OpenSiv3D 実装会)
 //	- mak1a
-//  - 
+//	- Luke
 //-----------------------------------------------
 # pragma once
 # include <Siv3D.hpp>
@@ -414,7 +414,7 @@ namespace s3d
 		/// @param errorString エラー文字列
 		virtual void joinRoomReturn(int32 localPlayerID, int32 errorCode, const String& errorString);
 
-		/// @brief ルームに誰かが(自分も含めて)入室したときに呼び出されます。
+		/// @brief ルームに誰かが(自分または他人)が入室したときに呼び出されます。
 		/// @param localPlayerID 入室したプレイヤーのID
 		/// @param playerIDs ルーム内のプレイヤー全員のID
 		/// @param isSelf 入室したのが自分である場合 true, それ以外の場合は false
@@ -678,6 +678,9 @@ namespace s3d
 		/// @remark connect() 内で初期化を行い、Multiplayer_Photonを継承した先のメンバ変数として使用できます。
 		String m_defaultRoomName;
 
+		/// @brief Verbose モード (Print による詳細なデバッグ出力をする場合 true)
+		bool m_verbose = true;
+
 	private:
 
 		class PhotonDetail;
@@ -688,21 +691,9 @@ namespace s3d
 
 		bool m_isActive = false;
 
-		// モードが有効なときのみ Print するようにします。
-		bool m_verbose = true;
-
 		/// @brief リスナーの参照を返します。
 		/// @return リスナーの参照
 		[[nodiscard]]
 		ExitGames::LoadBalancing::Client& getClient();
-
-		template <class Type>
-		void PrintCustomEventAction(StringView type, int32 playerID, int32 eventCode, const Type& data)
-		{
-			Print << U"[Multiplayer_Photon] Multiplayer_Photon::customEventAction(" << type << U")";
-			Print << U"- [Multiplayer_Photon] playerID: " << playerID;
-			Print << U"- [Multiplayer_Photon] eventCode: " << eventCode;
-			Print << U"- [Multiplayer_Photon] data: " << data;
-		}
 	};
 }

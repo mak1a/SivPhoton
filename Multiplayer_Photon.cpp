@@ -12,7 +12,7 @@
 //-----------------------------------------------
 //	Author (OpenSiv3D 実装会)
 //	- mak1a
-//  - 
+//	- Luke
 //-----------------------------------------------
 
 # define NOMINMAX
@@ -604,6 +604,15 @@ namespace s3d
 		ev.put(L"values", data.data(), static_cast<int16>(data.size()));
 
 		client->opRaiseEvent(Reliable, ev, eventCode);
+	}
+
+	template <class Type>
+	void PrintCustomEventAction(StringView type, int32 playerID, int32 eventCode, const Type& data)
+	{
+		Print << U"[Multiplayer_Photon] Multiplayer_Photon::customEventAction(" << type << U")";
+		Print << U"- [Multiplayer_Photon] playerID: " << playerID;
+		Print << U"- [Multiplayer_Photon] eventCode: " << eventCode;
+		Print << U"- [Multiplayer_Photon] data: " << data;
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const bool value)
