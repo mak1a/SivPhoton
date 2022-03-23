@@ -48,7 +48,7 @@ private:
 			Print << U"MyNetwork::joinRandomRoomReturn() [既存のランダムなルームに参加を試みた結果を処理する]";
 		}
 
-		// 今回のプログラムでは、最初に誰もランダムなルームを作らないので、
+		// 最初に誰もランダムなルームを作っていないときは、
 		// NetworkSystem::NoRandomMatchFound エラーになる
 		if (errorCode == NetworkSystem::NoRandomMatchFound)
 		{
@@ -75,6 +75,10 @@ private:
 			if (isSelf)
 			{
 				Print << U"[ルームに自分が参加した]";
+			}
+			else
+			{
+				Print << U"[ルームに誰かが参加した]";
 			}
 		}
 	}
