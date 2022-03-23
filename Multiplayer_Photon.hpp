@@ -119,10 +119,20 @@ namespace s3d
 		/// @param value 送信するデータ
 		void opRaiseEvent(uint8 eventCode, double value);
 
-		/// @brief データの送信を行います。
+		/// @brief 文字列の送信を行います。
+		/// @param eventCode イベントコード
+		/// @param value 送信するデータ
+		void opRaiseEvent(uint8 eventCode, const char32* value);
+
+		/// @brief 文字列の送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
 		void opRaiseEvent(uint8 eventCode, StringView value);
+
+		/// @brief 文字列の送信を行います。
+		/// @param eventCode イベントコード
+		/// @param value 送信するデータ
+		void opRaiseEvent(uint8 eventCode, const String& value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード

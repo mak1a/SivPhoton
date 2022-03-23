@@ -635,9 +635,19 @@ namespace s3d
 		m_client->opRaiseEvent(Reliable, value, eventCode);
 	}
 
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const char32* value)
+	{
+		opRaiseEvent(eventCode, StringView{ value });
+	}
+
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const StringView value)
 	{
 		m_client->opRaiseEvent(Reliable, detail::ToJString(value), eventCode);
+	}
+
+	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const String& value)
+	{
+		opRaiseEvent(eventCode, StringView{ value });
 	}
 
 	void Multiplayer_Photon::opRaiseEvent(const uint8 eventCode, const Array<bool>& values)
