@@ -104,7 +104,7 @@ void Main()
 		network.update();
 
 		// サーバーに接続するボタン
-		if (SimpleGUI::Button(U"Connect", Vec2{ 1000, 20 }, 140, (not network.isActive())))
+		if (SimpleGUI::Button(U"Connect", Vec2{ 1000, 20 }, 160, (not network.isActive())))
 		{
 			// ユーザ名
 			const String userName = U"Siv";
@@ -114,7 +114,7 @@ void Main()
 		}
 
 		// サーバーから切断するボタン
-		if (SimpleGUI::Button(U"Disconnect", Vec2{ 1000, 60 }, 140, network.isActive()))
+		if (SimpleGUI::Button(U"Disconnect", Vec2{ 1000, 60 }, 160, network.isActive()))
 		{
 			// サーバーから切断する
 			network.disconnect();

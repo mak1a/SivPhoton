@@ -80,23 +80,23 @@ namespace s3d
 		/// @remark 6 秒間以上この関数を呼ばないと自動的に切断されます。
 		void update();
 
-		/// @brief ランダムルームに入室した際に呼び出されます。
+		/// @brief ランダムルームに入室を試みます。
 		/// @param maxPlayers ルームの最大人数
 		/// @remark 最大 255, 無料の Photon アカウントの場合は 20
 		void opJoinRandomRoom(int32 maxPlayers);
 
-		/// @brief ルームに入室した際に呼び出されます。
+		/// @brief ルームに入室を試みます。
 		/// @param roomName ルーム名
 		/// @param rejoin 退出した際にルームに再接続するか
 		void opJoinRoom(StringView roomName, bool rejoin = false);
 
-		/// @brief ルームを作成した際に呼び出されます。
+		/// @brief ルームの作成を試みます。
 		/// @param roomName ルーム名
 		/// @param maxPlayers ルームの最大人数
 		/// @remark 最大 255, 無料の Photon アカウントの場合は 20
 		void opCreateRoom(StringView roomName, int32 maxPlayers);
 
-		/// @brief ルームを退出した際に呼び出されます。
+		/// @brief ルームの退出を試みます。
 		void opLeaveRoom();
 
 		/// @brief データの送信を行います。
@@ -257,56 +257,6 @@ namespace s3d
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Array<Color>& values);
-
-		/// @brief データの送信を行います。
-		/// @param eventCode イベントコード
-		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Array<ColorF>& values);
-
-		/// @brief データの送信を行います。
-		/// @param eventCode イベントコード
-		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Array<HSV>& values);
-
-		/// @brief データの送信を行います。
-		/// @param eventCode イベントコード
-		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Array<Point>& values);
-
-		/// @brief データの送信を行います。
-		/// @param eventCode イベントコード
-		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Array<Vec2>& values);
-
-		/// @brief データの送信を行います。
-		/// @param eventCode イベントコード
-		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Array<Vec3>& values);
-
-		/// @brief データの送信を行います。
-		/// @param eventCode イベントコード
-		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Array<Vec4>& values);
-
-		/// @brief データの送信を行います。
-		/// @param eventCode イベントコード
-		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Array<Float2>& values);
-
-		/// @brief データの送信を行います。
-		/// @param eventCode イベントコード
-		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Array<Float3>& values);
-
-		/// @brief データの送信を行います。
-		/// @param eventCode イベントコード
-		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Array<Float4>& values);
-
-		/// @brief データの送信を行います。
-		/// @param eventCode イベントコード
-		/// @param value 送信するデータ
 		/// @remark 自作クラスを送信する際に利用できます。
 		void opRaiseEvent(uint8 eventCode, Serializer<MemoryWriter>& writer);
 
@@ -445,242 +395,182 @@ namespace s3d
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, bool data);
+		virtual void customEventAction(int32 playerID, uint8 eventCode, bool data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, int32 data);
+		virtual void customEventAction(int32 playerID, uint8 eventCode, int32 data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, float data);
+		virtual void customEventAction(int32 playerID, uint8 eventCode, float data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, double data);
+		virtual void customEventAction(int32 playerID, uint8 eventCode, double data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const String& data);
+		virtual void customEventAction(int32 playerID, uint8 eventCode, const String& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Array<bool>& data);
+		virtual void customEventAction(int32 playerID, uint8 eventCode, const Array<bool>& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Array<int32>& data);
+		virtual void customEventAction(int32 playerID, uint8 eventCode, const Array<int32>& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Array<float>& data);
+		virtual void customEventAction(int32 playerID, uint8 eventCode, const Array<float>& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Array<double>& data);
+		virtual void customEventAction(int32 playerID, uint8 eventCode, const Array<double>& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Array<String>& data);
+		virtual void customEventAction(int32 playerID, uint8 eventCode, const Array<String>& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Color& data);
+		virtual void customEventAction(int32 playerID, uint8 eventCode, const Color& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const ColorF& data);
+		virtual void customEventAction(int32 playerID, uint8 eventCode, const ColorF& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const HSV& data);
+		virtual void customEventAction(int32 playerID, uint8 eventCode, const HSV& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Point& data);
+		virtual void customEventAction(int32 playerID, uint8 eventCode, const Point& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Vec2& data);
+		virtual void customEventAction(int32 playerID, uint8 eventCode, const Vec2& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Vec3& data);
+		virtual void customEventAction(int32 playerID, uint8 eventCode, const Vec3& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Vec4& data);
+		virtual void customEventAction(int32 playerID, uint8 eventCode, const Vec4& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Float2& data);
+		virtual void customEventAction(int32 playerID, uint8 eventCode, const Float2& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Float3& data);
+		virtual void customEventAction(int32 playerID, uint8 eventCode, const Float3& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Float4& data);
+		virtual void customEventAction(int32 playerID, uint8 eventCode, const Float4& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Mat3x2& data);
+		virtual void customEventAction(int32 playerID, uint8 eventCode, const Mat3x2& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Rect& data);
+		virtual void customEventAction(int32 playerID, uint8 eventCode, const Rect& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Circle& data);
+		virtual void customEventAction(int32 playerID, uint8 eventCode, const Circle& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Line& data);
+		virtual void customEventAction(int32 playerID, uint8 eventCode, const Line& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Triangle& data);
+		virtual void customEventAction(int32 playerID, uint8 eventCode, const Triangle& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const RectF& data);
+		virtual void customEventAction(int32 playerID, uint8 eventCode, const RectF& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Quad& data);
+		virtual void customEventAction(int32 playerID, uint8 eventCode, const Quad& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Ellipse& data);
+		virtual void customEventAction(int32 playerID, uint8 eventCode, const Ellipse& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const RoundRect& data);
-
-		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
-		/// @param eventCode イベントコード
-		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Array<Color>& data);
-
-		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
-		/// @param eventCode イベントコード
-		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Array<ColorF>& data);
-
-		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
-		/// @param eventCode イベントコード
-		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Array<HSV>& data);
-
-		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
-		/// @param eventCode イベントコード
-		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Array<Point>& data);
-
-		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
-		/// @param eventCode イベントコード
-		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Array<Vec2>& data);
-
-		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
-		/// @param eventCode イベントコード
-		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Array<Vec3>& data);
-
-		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
-		/// @param eventCode イベントコード
-		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Array<Vec4>& data);
-
-		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
-		/// @param eventCode イベントコード
-		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Array<Float2>& data);
-
-		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
-		/// @param eventCode イベントコード
-		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Array<Float3>& data);
-
-		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
-		/// @param eventCode イベントコード
-		/// @param data 受信したデータ
-		virtual void customEventAction(int32 playerID, int32 eventCode, const Array<Float4>& data);
+		virtual void customEventAction(int32 playerID, uint8 eventCode, const RoundRect& data);
 
 		/// @brief データを受信した際に呼び出されます。
 		/// @param playerID 送信したプレイヤーのID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		/// @remark 自作クラスを受信する際に利用できます。
-		virtual void customEventAction(int32 playerID, int32 eventCode, Deserializer<MemoryReader>& reader);
+		virtual void customEventAction(int32 playerID, uint8 eventCode, Deserializer<MemoryReader>& reader);
 
 	protected:
 
