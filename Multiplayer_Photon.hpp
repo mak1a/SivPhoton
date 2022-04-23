@@ -16,6 +16,7 @@
 //-----------------------------------------------
 # pragma once
 # include <Siv3D.hpp>
+using Verbose = YesNo<struct Verbose_tag>;
 
 # if SIV3D_PLATFORM(WINDOWS)
 #	if SIV3D_BUILD(DEBUG)
@@ -38,11 +39,23 @@ namespace ExitGames::LoadBalancing
 
 namespace s3d
 {
-	namespace NetworkSystem
+	struct LocalPlayer
 	{
-		/// @brief 既存のランダムマッチが見つからなかった時のエラーコード
-		inline constexpr int32 NoRandomMatchFound = (0x7FFF - 7);
-	}
+		/// @brief ルーム内でのローカル ID
+		int32 localID = 0;
+
+		/// @brief ユーザ名
+		String userName;
+
+		/// @brief ユーザ ID
+		String userID;
+
+		/// @brief ルームのホストであるか
+		bool isHost = false;
+
+		/// @brief アクティブであるか
+		bool isActive = false;
+	};
 
 	/// @brief マルチプレイヤー用クラス (Photon バックエンド)
 	class Multiplayer_Photon
@@ -55,23 +68,23 @@ namespace s3d
 		/// @brief マルチプレイヤー用クラスを作成します。
 		/// @param secretPhotonAppID Photon アプリケーション ID
 		/// @param photonAppVersion アプリケーションのバージョンです。
-		/// @param verbose trueの時にデバッグ用の文字列を表示します。
+		/// @param デバッグ用の Print 出力をする場合 Verbose::Yes, それ以外の場合は Verbose::No
 		/// @remark アプリケーションバージョンが異なる Multiplayer_Photon とは通信できません。
 		SIV3D_NODISCARD_CXX20
-		Multiplayer_Photon(std::string_view secretPhotonAppID, StringView photonAppVersion, bool verbose = true);
+		Multiplayer_Photon(std::string_view secretPhotonAppID, StringView photonAppVersion, Verbose verbose = Verbose::Yes);
 
 		virtual ~Multiplayer_Photon();
 
 		/// @brief マルチプレイヤー用クラスを作成します。
 		/// @param secretPhotonAppID Photon アプリケーション ID
 		/// @param photonAppVersion アプリケーションのバージョンです。
-		/// @param verbose trueの時にデバッグ用の文字列を表示します。
-		void init(StringView secretPhotonAppID, StringView photonAppVersion, bool verbose = true);
+		/// @param verbose デバッグ用の Print 出力をする場合 Verbose::Yes, それ以外の場合は Verbose::No
+		void init(StringView secretPhotonAppID, StringView photonAppVersion, Verbose verbose = Verbose::Yes);
 
 		/// @brief Photon サーバへの接続を試みます。
 		/// @param userName ユーザ名
 		/// @param defaultRoomName ルーム名
-		void connect(StringView userName = U"", const Optional<String>& defaultRoomName = unspecified);
+		void connect(StringView userName);
 
 		/// @brief Photon サーバから切断を試みます。
 		void disconnect();
@@ -83,182 +96,182 @@ namespace s3d
 		/// @brief ランダムルームに入室を試みます。
 		/// @param maxPlayers ルームの最大人数
 		/// @remark 最大 255, 無料の Photon アカウントの場合は 20
-		void opJoinRandomRoom(int32 maxPlayers);
+		void joinRandomRoom(int32 maxPlayers);
 
 		/// @brief ルームに入室を試みます。
 		/// @param roomName ルーム名
 		/// @param rejoin 退出した際にルームに再接続するか
-		void opJoinRoom(StringView roomName, bool rejoin = false);
+		void joinRoom(StringView roomName, bool rejoin = false);
 
 		/// @brief ルームの作成を試みます。
 		/// @param roomName ルーム名
 		/// @param maxPlayers ルームの最大人数
 		/// @remark 最大 255, 無料の Photon アカウントの場合は 20
-		void opCreateRoom(StringView roomName, int32 maxPlayers);
+		void createRoom(StringView roomName, int32 maxPlayers);
 
 		/// @brief ルームの退出を試みます。
-		void opLeaveRoom();
+		void leaveRoom();
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, bool value);
+		void sendEvent(uint8 eventCode, bool value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, int32 value);
+		void sendEvent(uint8 eventCode, int32 value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, float value);
+		void sendEvent(uint8 eventCode, float value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, double value);
+		void sendEvent(uint8 eventCode, double value);
 
 		/// @brief 文字列の送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const char32* value);
+		void sendEvent(uint8 eventCode, const char32* value);
 
 		/// @brief 文字列の送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, StringView value);
+		void sendEvent(uint8 eventCode, StringView value);
 
 		/// @brief 文字列の送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const String& value);
+		void sendEvent(uint8 eventCode, const String& value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Array<bool>& value);
+		void sendEvent(uint8 eventCode, const Array<bool>& value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Array<int32>& value);
+		void sendEvent(uint8 eventCode, const Array<int32>& value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Array<float>& value);
+		void sendEvent(uint8 eventCode, const Array<float>& value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Array<double>& value);
+		void sendEvent(uint8 eventCode, const Array<double>& value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Array<String>& value);
+		void sendEvent(uint8 eventCode, const Array<String>& value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Color& value);
+		void sendEvent(uint8 eventCode, const Color& value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const ColorF& value);
+		void sendEvent(uint8 eventCode, const ColorF& value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const HSV& value);
+		void sendEvent(uint8 eventCode, const HSV& value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Point& value);
+		void sendEvent(uint8 eventCode, const Point& value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Vec2& value);
+		void sendEvent(uint8 eventCode, const Vec2& value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Vec3& value);
+		void sendEvent(uint8 eventCode, const Vec3& value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Vec4& value);
+		void sendEvent(uint8 eventCode, const Vec4& value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Float2& value);
+		void sendEvent(uint8 eventCode, const Float2& value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Float3& value);
+		void sendEvent(uint8 eventCode, const Float3& value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Float4& value);
+		void sendEvent(uint8 eventCode, const Float4& value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Mat3x2& value);
+		void sendEvent(uint8 eventCode, const Mat3x2& value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Rect& value);
+		void sendEvent(uint8 eventCode, const Rect& value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Circle& value);
+		void sendEvent(uint8 eventCode, const Circle& value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Line& value);
+		void sendEvent(uint8 eventCode, const Line& value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Triangle& value);
+		void sendEvent(uint8 eventCode, const Triangle& value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const RectF& value);
+		void sendEvent(uint8 eventCode, const RectF& value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Quad& value);
+		void sendEvent(uint8 eventCode, const Quad& value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const Ellipse& value);
+		void sendEvent(uint8 eventCode, const Ellipse& value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
-		void opRaiseEvent(uint8 eventCode, const RoundRect& value);
+		void sendEvent(uint8 eventCode, const RoundRect& value);
 
 		/// @brief データの送信を行います。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
 		/// @remark 自作クラスを送信する際に利用できます。
-		void opRaiseEvent(uint8 eventCode, Serializer<MemoryWriter>& writer);
+		void sendEvent(uint8 eventCode, Serializer<MemoryWriter>& writer);
 
 		/// @brief サーバに接続したときのユーザ名を返します。
 		/// @return ユーザ名
@@ -270,10 +283,25 @@ namespace s3d
 		[[nodiscard]]
 		String getUserID() const;
 
+		/// @brief ルーム内でのプレイヤー ID を返します。
+		/// @return ルーム内でのプレイヤー ID, ルームに参加していない場合は none
+		[[nodiscard]]
+		Optional<int32> getLocalPlayerID() const;
+
 		/// @brief 存在するルーム名の一覧を返します。
 		/// @return 存在するルーム名の一覧
 		[[nodiscard]]
 		Array<String> getRoomNameList() const;
+
+		/// @brief 自分がロビーに参加しているかを返します。
+		/// @return ロビーに参加している場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool isInLobby() const;
+
+		/// @brief 自分がロビーまたはルームに参加しているかを返します。
+		/// @return ロビーまたはルーム参加している場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool isInLobbyOrInRoom() const;
 
 		/// @brief 自分がルームに参加しているかを返します。
 		/// @return ルームに参加している場合 true, それ以外の場合は false
@@ -284,6 +312,11 @@ namespace s3d
 		/// @return 現在のルーム名
 		[[nodiscard]]
 		String getCurrentRoomName() const;
+
+		/// @brief 現在のルームにいるローカルプレイヤーの情報一覧を返します
+		/// @return 現在のルームにいるローカルプレイヤーの情報一覧
+		[[nodiscard]]
+		Array<LocalPlayer> getLocalPlayers() const;
 
 		/// @brief 現在のルームに存在するプレイヤーの人数を返します。
 		/// @return プレイヤーの人数
@@ -328,15 +361,10 @@ namespace s3d
 		[[nodiscard]]
 		int32 getCountPlayersOnline() const;
 
-		/// @brief ルーム内でのプレイヤー ID を返します。
-		/// @return ルーム内でのプレイヤー ID, ルームに参加していない場合は none
-		[[nodiscard]]
-		Optional<int32> getLocalPlayerID() const;
-
 		/// @brief 自分がマスタークライアントであるかを返します。
 		/// @return マスタークライアントである場合 true, それ以外の場合は false
 		[[nodiscard]]
-		bool isMasterClient() const;
+		bool isHost() const;
 
 		/// @brief update() を呼ぶ必要がある状態であるかを返します。
 		/// @return  update() を呼ぶ必要がある状態である場合 true, それ以外の場合は false
@@ -363,210 +391,210 @@ namespace s3d
 		virtual void leaveRoomReturn(int32 errorCode, const String& errorString);
 
 		/// @brief ランダムルームへの入室を試みた結果が通知されるときに呼び出されます。
-		/// @param localPlayerID ルーム内のプレイヤーID
+		/// @param playerID ルーム内のローカルプレイヤー ID
 		/// @param errorCode エラーコード
 		/// @param errorString エラー文字列
-		virtual void joinRandomRoomReturn(int32 localPlayerID, int32 errorCode, const String& errorString);
+		virtual void joinRandomRoomReturn(int32 playerID, int32 errorCode, const String& errorString);
 
 		/// @brief ルームへの入室を試みた結果が通知されるときに呼び出されます。
-		/// @param localPlayerID ルーム内のプレイヤーID
+		/// @param playerID ルーム内のローカルプレイヤー ID
 		/// @param errorCode エラーコード
 		/// @param errorString エラー文字列
-		virtual void joinRoomReturn(int32 localPlayerID, int32 errorCode, const String& errorString);
+		virtual void joinRoomReturn(int32 playerID, int32 errorCode, const String& errorString);
 
 		/// @brief ルームに誰かが(自分または他人)が入室したときに呼び出されます。
-		/// @param localPlayerID 入室したプレイヤーのID
-		/// @param playerIDs ルーム内のプレイヤー全員のID
+		/// @param playerID 入室者のローカルプレイヤー ID
+		/// @param playerIDs ルーム内のプレイヤー全員のローカルプレイヤー ID
 		/// @param isSelf 入室したのが自分である場合 true, それ以外の場合は false
-		virtual void joinRoomEventAction(int32 localPlayerID, const Array<int32>& playerIDs, bool isSelf);
+		virtual void joinRoomEventAction(int32 playerID, const Array<int32>& playerIDs, bool isSelf);
 
 		/// @brief ルームから誰かが退室したときに呼び出されます。
-		/// @param playerID 入室したプレイヤーのID
+		/// @param playerID 退室者のローカルプレイヤー ID
 		/// @param isInactive 再入室できる場合 true, それ以外の場合は false
 		virtual void leaveRoomEventAction(int32 playerID, bool isInactive);
 
 		/// @brief 部屋の作成を試みた結果が通知されるときに呼び出されます。
-		/// @param localPlayerID プレイヤーID
+		/// @param playerID プレイヤーID
 		/// @param errorCode エラーコード
 		/// @param errorString エラー文字列
-		virtual void createRoomReturn(int32 localPlayerID, int32 errorCode, const String& errorString);
+		virtual void createRoomReturn(int32 playerID, int32 errorCode, const String& errorString);
 
 		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
+		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		virtual void customEventAction(int32 playerID, uint8 eventCode, bool data);
 
 		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
+		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		virtual void customEventAction(int32 playerID, uint8 eventCode, int32 data);
 
 		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
+		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		virtual void customEventAction(int32 playerID, uint8 eventCode, float data);
 
 		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
+		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		virtual void customEventAction(int32 playerID, uint8 eventCode, double data);
 
 		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
+		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		virtual void customEventAction(int32 playerID, uint8 eventCode, const String& data);
 
 		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
+		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		virtual void customEventAction(int32 playerID, uint8 eventCode, const Array<bool>& data);
 
 		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
+		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		virtual void customEventAction(int32 playerID, uint8 eventCode, const Array<int32>& data);
 
 		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
+		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		virtual void customEventAction(int32 playerID, uint8 eventCode, const Array<float>& data);
 
 		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
+		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		virtual void customEventAction(int32 playerID, uint8 eventCode, const Array<double>& data);
 
 		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
+		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		virtual void customEventAction(int32 playerID, uint8 eventCode, const Array<String>& data);
 
 		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
+		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		virtual void customEventAction(int32 playerID, uint8 eventCode, const Color& data);
 
 		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
+		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		virtual void customEventAction(int32 playerID, uint8 eventCode, const ColorF& data);
 
 		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
+		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		virtual void customEventAction(int32 playerID, uint8 eventCode, const HSV& data);
 
 		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
+		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		virtual void customEventAction(int32 playerID, uint8 eventCode, const Point& data);
 
 		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
+		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		virtual void customEventAction(int32 playerID, uint8 eventCode, const Vec2& data);
 
 		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
+		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		virtual void customEventAction(int32 playerID, uint8 eventCode, const Vec3& data);
 
 		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
+		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		virtual void customEventAction(int32 playerID, uint8 eventCode, const Vec4& data);
 
 		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
+		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		virtual void customEventAction(int32 playerID, uint8 eventCode, const Float2& data);
 
 		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
+		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		virtual void customEventAction(int32 playerID, uint8 eventCode, const Float3& data);
 
 		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
+		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		virtual void customEventAction(int32 playerID, uint8 eventCode, const Float4& data);
 
 		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
+		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		virtual void customEventAction(int32 playerID, uint8 eventCode, const Mat3x2& data);
 
 		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
+		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		virtual void customEventAction(int32 playerID, uint8 eventCode, const Rect& data);
 
 		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
+		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		virtual void customEventAction(int32 playerID, uint8 eventCode, const Circle& data);
 
 		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
+		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		virtual void customEventAction(int32 playerID, uint8 eventCode, const Line& data);
 
 		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
+		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		virtual void customEventAction(int32 playerID, uint8 eventCode, const Triangle& data);
 
 		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
+		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		virtual void customEventAction(int32 playerID, uint8 eventCode, const RectF& data);
 
 		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
+		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		virtual void customEventAction(int32 playerID, uint8 eventCode, const Quad& data);
 
 		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
+		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		virtual void customEventAction(int32 playerID, uint8 eventCode, const Ellipse& data);
 
 		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
+		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		virtual void customEventAction(int32 playerID, uint8 eventCode, const RoundRect& data);
 
 		/// @brief データを受信した際に呼び出されます。
-		/// @param playerID 送信したプレイヤーのID
+		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		/// @remark 自作クラスを受信する際に利用できます。
@@ -574,9 +602,8 @@ namespace s3d
 
 	protected:
 
-		/// @brief デフォルトのルーム名
-		/// @remark connect() 内で初期化を行い、Multiplayer_Photonを継承した先のメンバ変数として使用できます。
-		String m_defaultRoomName;
+		/// @brief 既存のランダムマッチが見つからなかった時のエラーコード
+		static constexpr int32 NoRandomMatchFound = (0x7FFF - 7);
 
 		/// @brief Verbose モード (Print による詳細なデバッグ出力をする場合 true)
 		bool m_verbose = true;

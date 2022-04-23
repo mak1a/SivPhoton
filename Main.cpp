@@ -37,7 +37,7 @@ private:
 		}
 
 		// ランダムなルームに参加を試みる
-		this->opJoinRandomRoom(MaxPlayers);
+		this->joinRandomRoom(MaxPlayers);
 	}
 
 	// 既存のランダムなルームに参加を試みた結果を処理する関数を実装する
@@ -50,7 +50,7 @@ private:
 
 		// 最初に誰もランダムなルームを作っていないときは、
 		// NetworkSystem::NoRandomMatchFound エラーになる
-		if (errorCode == NetworkSystem::NoRandomMatchFound)
+		if (errorCode == NoRandomMatchFound)
 		{
 			if (m_verbose)
 			{
@@ -58,7 +58,7 @@ private:
 			}
 
 			// 自分でルームを新規作成する
-			this->opCreateRoom(m_defaultRoomName, MaxPlayers);
+			this->createRoom(m_defaultRoomName, MaxPlayers);
 		}
 	}
 
@@ -88,15 +88,12 @@ void Main()
 {
 	Window::Resize(1280, 720);
 
-	// Print で詳細なデバッグ出力をするか
-	constexpr bool Verbose = true;
-
 	// Photon App ID (ビルドしたバイナリに App ID が直接埋め込まれないよう、SIV3D_OBFUSCATE() でラップする)
 	const std::string secretAppID{ SIV3D_OBFUSCATE(PHOTON_APP_ID) };
 
 	// サーバーと通信する為のクラス
 	// 引数: Photon App ID、今回作ったアプリケーションのバージョン、デバッグ出力の有無
-	MyNetwork network{ secretAppID, U"1.0", Verbose };
+	MyNetwork network{ secretAppID, U"1.0", Verbose::Yes };
 
 	while (System::Update())
 	{
