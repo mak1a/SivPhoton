@@ -95,7 +95,9 @@ namespace s3d
 
 		/// @brief Photon サーバへの接続を試みます。
 		/// @param userName ユーザ名
-		void connect(StringView userName);
+		/// @param region 接続するサーバのリージョン。unspecified の場合は利用可能なサーバのうち最速のものが選択されます
+		/// @remark リージョンは https://doc.photonengine.com/en-us/pun/current/connection-and-authentication/regions を参照してください。
+		void connect(StringView userName, const Optional<String>& region = unspecified);
 
 		/// @brief Photon サーバから切断を試みます。
 		void disconnect();
@@ -130,7 +132,22 @@ namespace s3d
 		/// @brief データをルームに送信します。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
+		void sendEvent(uint8 eventCode, uint8 value);
+
+		/// @brief データをルームに送信します。
+		/// @param eventCode イベントコード
+		/// @param value 送信するデータ
+		void sendEvent(uint8 eventCode, int16 value);
+
+		/// @brief データをルームに送信します。
+		/// @param eventCode イベントコード
+		/// @param value 送信するデータ
 		void sendEvent(uint8 eventCode, int32 value);
+
+		/// @brief データをルームに送信します。
+		/// @param eventCode イベントコード
+		/// @param value 送信するデータ
+		void sendEvent(uint8 eventCode, int64 value);
 
 		/// @brief データをルームに送信します。
 		/// @param eventCode イベントコード
@@ -165,7 +182,22 @@ namespace s3d
 		/// @brief データをルームに送信します。
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
+		void sendEvent(uint8 eventCode, const Array<uint8>& value);
+
+		/// @brief データをルームに送信します。
+		/// @param eventCode イベントコード
+		/// @param value 送信するデータ
+		void sendEvent(uint8 eventCode, const Array<int16>&value);
+
+		/// @brief データをルームに送信します。
+		/// @param eventCode イベントコード
+		/// @param value 送信するデータ
 		void sendEvent(uint8 eventCode, const Array<int32>& value);
+
+		/// @brief データをルームに送信します。
+		/// @param eventCode イベントコード
+		/// @param value 送信するデータ
+		void sendEvent(uint8 eventCode, const Array<int64>&value);
 
 		/// @brief データをルームに送信します。
 		/// @param eventCode イベントコード
@@ -281,7 +313,7 @@ namespace s3d
 		/// @param eventCode イベントコード
 		/// @param value 送信するデータ
 		/// @remark 自作クラスを送信する際に利用できます。
-		void sendEvent(uint8 eventCode, Serializer<MemoryWriter>& writer);
+		void sendEvent(uint8 eventCode, const Serializer<MemoryWriter>& writer);
 
 		/// @brief 自身のユーザ名を返します。
 		/// @return 自身のユーザ名
@@ -439,7 +471,25 @@ namespace s3d
 		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
+		virtual void customEventAction(LocalPlayerID playerID, uint8 eventCode, uint8 data);
+
+		/// @brief ルームでデータを受信した際に呼ばれます。
+		/// @param playerID 送信者のローカルプレイヤー ID
+		/// @param eventCode イベントコード
+		/// @param data 受信したデータ
+		virtual void customEventAction(LocalPlayerID playerID, uint8 eventCode, int16 data);
+
+		/// @brief ルームでデータを受信した際に呼ばれます。
+		/// @param playerID 送信者のローカルプレイヤー ID
+		/// @param eventCode イベントコード
+		/// @param data 受信したデータ
 		virtual void customEventAction(LocalPlayerID playerID, uint8 eventCode, int32 data);
+
+		/// @brief ルームでデータを受信した際に呼ばれます。
+		/// @param playerID 送信者のローカルプレイヤー ID
+		/// @param eventCode イベントコード
+		/// @param data 受信したデータ
+		virtual void customEventAction(LocalPlayerID playerID, uint8 eventCode, int64 data);
 
 		/// @brief ルームでデータを受信した際に呼ばれます。
 		/// @param playerID 送信者のローカルプレイヤー ID
@@ -469,7 +519,25 @@ namespace s3d
 		/// @param playerID 送信者のローカルプレイヤー ID
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
+		virtual void customEventAction(LocalPlayerID playerID, uint8 eventCode, const Array<uint8>& data);
+
+		/// @brief ルームでデータを受信した際に呼ばれます。
+		/// @param playerID 送信者のローカルプレイヤー ID
+		/// @param eventCode イベントコード
+		/// @param data 受信したデータ
+		virtual void customEventAction(LocalPlayerID playerID, uint8 eventCode, const Array<int16>& data);
+
+		/// @brief ルームでデータを受信した際に呼ばれます。
+		/// @param playerID 送信者のローカルプレイヤー ID
+		/// @param eventCode イベントコード
+		/// @param data 受信したデータ
 		virtual void customEventAction(LocalPlayerID playerID, uint8 eventCode, const Array<int32>& data);
+
+		/// @brief ルームでデータを受信した際に呼ばれます。
+		/// @param playerID 送信者のローカルプレイヤー ID
+		/// @param eventCode イベントコード
+		/// @param data 受信したデータ
+		virtual void customEventAction(LocalPlayerID playerID, uint8 eventCode, const Array<int64>& data);
 
 		/// @brief ルームでデータを受信した際に呼ばれます。
 		/// @param playerID 送信者のローカルプレイヤー ID
@@ -608,7 +676,7 @@ namespace s3d
 		/// @param eventCode イベントコード
 		/// @param data 受信したデータ
 		/// @remark 自作クラスを受信する際に利用できます。
-		virtual void customEventAction(LocalPlayerID playerID, uint8 eventCode, Deserializer<MemoryReader>& reader);
+		virtual void customEventAction(LocalPlayerID playerID, uint8 eventCode, Deserializer<MemoryViewReader>& reader);
 
 	protected:
 
@@ -626,6 +694,12 @@ namespace s3d
 		std::unique_ptr<ExitGames::LoadBalancing::Listener> m_listener;
 
 		std::unique_ptr<ExitGames::LoadBalancing::Client> m_client;
+
+		String m_secretPhotonAppID;
+
+		String m_photonAppVersion;
+
+		Optional<String> m_requestedRegion;
 
 		bool m_isActive = false;
 	};
