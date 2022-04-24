@@ -1,6 +1,6 @@
 ﻿# include <Siv3D.hpp> // OpenSiv3D v0.6.4
 # include "Multiplayer_Photon.hpp"
-# include "PHOTON_APP_ID.SECRET" // このファイルは外部公開しないよう注意
+# include "PHOTON_APP_ID.SECRET"
 
 // Multiplayer_Photon を継承したクラス
 class MyNetwork : public Multiplayer_Photon
@@ -47,7 +47,7 @@ private:
 	}
 
 	// 既存のランダムなルームに参加を試みた結果を処理する関数をオーバーライドしてカスタマイズする
-	void joinRandomRoomReturn([[maybe_unused]] const int32 playerID, const int32 errorCode, const String& errorString) override
+	void joinRandomRoomReturn([[maybe_unused]] const LocalPlayerID playerID, const int32 errorCode, const String& errorString) override
 	{
 		if (m_verbose)
 		{
@@ -59,7 +59,7 @@ private:
 		if (errorCode == NoRandomMatchFound)
 		{
 			// 新しく作るルーム名（既存のルーム名とは重複できない）
-			const String roomName = (getUserName() + U"'s room-" + ToHex(RandomUint32()));
+			const RoomName roomName = (getUserName() + U"'s room-" + ToHex(RandomUint32()));
 
 			if (m_verbose)
 			{
@@ -90,7 +90,7 @@ private:
 	}
 
 	// ルームを新規作成した結果を処理する関数をオーバーライドしてカスタマイズする
-	void createRoomReturn([[maybe_unused]] const int32 playerID, const int32 errorCode, const String& errorString) override
+	void createRoomReturn([[maybe_unused]] const LocalPlayerID playerID, const int32 errorCode, const String& errorString) override
 	{
 		if (m_verbose)
 		{
@@ -114,7 +114,7 @@ private:
 	}
 
 	// 誰か（自分を含む）が現在のルームに参加したときに呼ばれる関数をオーバーライドしてカスタマイズする
-	void joinRoomEventAction(const LocalPlayer& newPlayer, [[maybe_unused]] const Array<int32>& playerIDs, const bool isSelf) override
+	void joinRoomEventAction(const LocalPlayer& newPlayer, [[maybe_unused]] const Array<LocalPlayerID>& playerIDs, const bool isSelf) override
 	{
 		if (m_verbose)
 		{
@@ -139,7 +139,7 @@ private:
 	}
 
 	// 現在のルームから誰かが退出したときに呼ばれる関数をオーバーライドしてカスタマイズする
-	void leaveRoomEventAction(const int32 playerID, [[maybe_unused]] const bool isInactive) override
+	void leaveRoomEventAction(const LocalPlayerID playerID, [[maybe_unused]] const bool isInactive) override
 	{
 		if (m_verbose)
 		{
